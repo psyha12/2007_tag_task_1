@@ -44,4 +44,127 @@ cat("SleepDay:", sum(duplicated(sleep_day)), "\n")
 cat("MinuteSleep:", sum(duplicated(minute_sleep)), "\n")
 cat("MinuteMETs:", sum(duplicated(minute_mets)), "\n")
 ```
+#Summary
+## Sleep day
+```{r}
+summary(sleep_day)
+```
+
+## Minute METs
+```{r}
+summary(minute_mets)
+```
+
+## Sleep efficiency
+Calculated as:$\frac{\text{Minutes Asleep}}{\text{Time In Bed}} \times 100$
+
+```{r}
+sleep_day <- sleep_day %>%
+  mutate(
+    SleepEfficiency =
+      (TotalMinutesAsleep / TotalTimeInBed) * 100
+  )
+
+summary(sleep_day$SleepEfficiency)
+```
+# Minutes asleep distribution
+```{r}
+ggplot(
+  sleep_day,
+  aes(x = TotalMinutesAsleep)
+) +
+  geom_histogram(
+    bins = 20,
+    fill = "steelblue",
+    colour = "black"
+  ) +
+  labs(
+    title = "Distribution of Total Minutes Asleep",
+    x = "Minutes Asleep",
+    y = "Count"
+  )
+```
+### Obs
+Most users have a typical time asleep but some have unusually low minutes.
+
+# Sleep efficiency Distribution
+```{r}
+ggplot(
+  sleep_day,
+  aes(y = SleepEfficiency)
+) +
+  geom_boxplot(
+    fill = "lightgreen"
+  ) +
+  labs(
+    title = "Sleep Efficiency",
+    y = "Sleep Efficiency (%)"
+  )
+```
+### Obs
+Most users have a high sleep efficiency, but there are several outliers.
+
+# MET distribution
+```{r}
+ggplot(
+  minute_mets,
+  aes(x = METs)
+) +
+  geom_histogram(
+    bins = 30,
+    fill = "orange",
+    colour = "black"
+  ) +
+  labs(
+    title = "Distribution of MET Values",
+    x = "MET Value",
+    y = "Count"
+  )
+```
+### Obs
+Mostly lower MET values, so users have large periods of low activity.
+
+# Avg Sleep distribution by user
+```{r}
+avg_sleep <- sleep_day %>%
+  group_by(Id) %>%
+  summarise(
+    AvgSleep = mean(
+      TotalMinutesAsleep,
+      na.rm = TRUE
+    )
+  ) %>%
+  arrange(AvgSleep)
+
+ggplot(
+  avg_sleep,
+  aes(
+    x = reorder(as.factor(Id), AvgSleep),
+    y = AvgSleep
+  )
+) +
+  geom_col(
+    fill = "steelblue"
+  ) +
+  labs(
+    title = "Average Sleep Duration by User",
+    x = "User ID",
+    y = "Average Minutes Asleep"
+  ) +
+  theme(
+    axis.text.x = element_text(
+      angle = 90,
+      hjust = 1
+    )
+  )
+```
+# Dashboard inclusions
+- Sleep duration KPI
+- Sleep efficiency KPI
+- Activity intensities
+- Date filters
+- Sleep trends
+- Activity trends
+
+
 
