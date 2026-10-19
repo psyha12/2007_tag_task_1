@@ -44,7 +44,7 @@ cat("SleepDay:", sum(duplicated(sleep_day)), "\n")
 cat("MinuteSleep:", sum(duplicated(minute_sleep)), "\n")
 cat("MinuteMETs:", sum(duplicated(minute_mets)), "\n")
 ```
-#Summary
+#Summary  
 ## Sleep day
 ```{r}
 summary(sleep_day)
@@ -75,7 +75,7 @@ ggplot(
 ) +
   geom_histogram(
     bins = 20,
-    fill = "steelblue",
+    fill = "dodgerblue",
     colour = "black"
   ) +
   labs(
@@ -94,7 +94,7 @@ ggplot(
   aes(y = SleepEfficiency)
 ) +
   geom_boxplot(
-    fill = "lightgreen"
+    fill = "thistle"
   ) +
   labs(
     title = "Sleep Efficiency",
@@ -111,10 +111,12 @@ ggplot(
   aes(x = METs)
 ) +
   geom_histogram(
-    bins = 30,
-    fill = "orange",
+    bins = 20,
+    fill = "tomato",
     colour = "black"
-  ) +
+  )+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
   labs(
     title = "Distribution of MET Values",
     x = "MET Value",
@@ -144,23 +146,22 @@ ggplot(
   )
 ) +
   geom_col(
-    fill = "steelblue"
-  ) +
-  labs(
-    title = "Average Sleep Duration by User",
-    x = "User ID",
-    y = "Average Minutes Asleep"
+    fill = "peachpuff3"
   ) +
   theme(
-    axis.text.x = element_text(
-      angle = 90,
-      hjust = 1
-    )
-  )
+  axis.text.x = element_blank(),
+  axis.ticks.x = element_blank()
+  )+
+  labs(
+    title = "Average Sleep Duration by User",
+    x = "User",
+    y = "Average Minutes Asleep"
+  ) 
+  
 ```
 # Dashboard inclusions
-- Sleep duration KPI
-- Sleep efficiency KPI
+- Sleep duration
+- Sleep efficiency
 - Activity intensities
 - Date filters
 - Sleep trends
