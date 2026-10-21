@@ -1,0 +1,313 @@
+---
+title: "eda_5"
+output: html_document
+---
+
+This document explores the following files:
+
+- `minuteCaloriesNarrow_merged.csv`
+- `minuteCaloriesWide_merged.csv`
+- `minuteIntensitiesNarrow_merged.csv`
+
+The analysis checks missing and duplicate data, looks at intensity by hour,
+compares the calorie files, and plots calories by hour. It also includes
+summary statistics and a calorie distribution plot.
+
+All three files contain the same 33 distinct participant IDs. The `Id`
+column identifies participants and is not a numerical measurement.
+
+## Load data
+
+```{r setup}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+data_folder <- "data"
+
+calories_narrow <- read_csv(
+  file.path(data_folder, "minuteCaloriesNarrow_merged.csv"),
+  col_types = cols(Id = col_character())
+)
+
+calories_wide <- read_csv(
+  file.path(data_folder, "minuteCaloriesWide_merged.csv"),
+  col_types = cols(Id = col_character())
+)
+
+intensities <- read_csv(
+  file.path(data_folder, "minuteIntensitiesNarrow_merged.csv"),
+  col_types = cols(Id = col_character())
+)
+```
+
+## Dataset previews
+
+The first five rows of each dataset are shown below. Use the column
+navigation on the wide calorie table to view all its minute columns.
+
+### Calories narrow
+
+```{r preview-calories-narrow}
+head(calories_narrow, 5)
+```
+
+### Calories wide
+
+```{r preview-calories-wide}
+head(calories_wide, 5)
+```
+
+### Intensity narrow
+
+```{r preview-intensities}
+head(intensities, 5)
+```
+
+## Missing values and duplicates
+
+```{r quality-checks}
+datasets <- list(
+  "Calories narrow" = calories_narrow,
+  "Calories wide" = calories_wide,
+  "Intensity narrow" = intensities
+)
+
+for (label in names(datasets)) {
+  frame <- datasets[[label]]
+  missing <- colSums(is.na(frame))
+
+  cat("\n", label, "\n", sep = "")
+  cat("Missing values by column:\n")
+
+  if (any(missing > 0)) {
+    print(missing[missing > 0])
+  } else {
+    cat("None\n")
+  }
+
+  cat("Duplicate rows:", sum(duplicated(frame)), "\n")
+}
+```
+
+**Observation:** The three files have no missing values or duplicate rows,
+so they appear clean on these basic checks. This does not tell us whether
+every participant has a complete record for every minute.
+
+## Intensity by hour
+
+```{r hourly-intensity}
+date_format <- "%m/%d/%Y %I:%M:%S %p"
+
+intensities <- intensities %>%
+  mutate(
+    ActivityMinute = as.POSIXct(
+      ActivityMinute,
+      format = date_format,
+      tz = "UTC"
+    ),
+    hour = as.integer(format(ActivityMinute, "%H", tz = "UTC"))
+  )
+
+stopifnot(!anyNA(intensities$ActivityMinute))
+
+mean_intensity_by_hour <- intensities %>%
+  group_by(hour) %>%
+  summarise(
+    mean_intensity = mean(Intensity),
+    .groups = "drop"
+  )
+
+ggplot(mean_intensity_by_hour, aes(x = hour, y = mean_intensity)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "Average Intensity by Hour of Day",
+    x = "Hour of the day (0-23)",
+    y = "Average intensity"
+  )
+```
+
+The source files do not specify a time zone. UTC is used as a consistent
+parsing convention here, without shifting the clock times in the files.
+
+**Observation:** Intensity is generally higher during the day and lower
+overnight, with its highest hourly average around 18:00. These averages
+combine recorded minutes across participants; those with more recorded
+minutes at a given hour contribute more to that hour's average.
+
+## Compare the calorie files
+
+Convert the wide file's 60 minute columns into individual minute records,
+then match records using both participant ID and timestamp.
+
+```{r compare-calories}
+minute_columns <- sprintf("Calories%02d", 0:59)
+
+calories_from_wide <- calories_wide %>%
+  pivot_longer(
+    cols = all_of(minute_columns),
+    names_to = "minute_column",
+    values_to = "Calories_wide"
+  ) %>%
+  mutate(
+    hour_start = as.POSIXct(
+      ActivityHour,
+      format = date_format,
+      tz = "UTC"
+    ),
+    minute_offset = as.integer(sub("Calories", "", minute_column)),
+    ActivityMinute = hour_start + minute_offset * 60
+  ) %>%
+  select(Id, ActivityMinute, Calories_wide)
+
+calories_narrow <- calories_narrow %>%
+  mutate(
+    ActivityMinute = as.POSIXct(
+      ActivityMinute,
+      format = date_format,
+      tz = "UTC"
+    )
+  )
+
+stopifnot(
+  !anyNA(calories_from_wide$ActivityMinute),
+  !anyNA(calories_narrow$ActivityMinute)
+)
+
+calorie_comparison <- full_join(
+  calories_narrow,
+  calories_from_wide,
+  by = c("Id", "ActivityMinute"),
+  relationship = "one-to-one"
+)
+
+overlap <- calorie_comparison %>%
+  filter(!is.na(Calories), !is.na(Calories_wide))
+
+overlap_matches <- all(overlap$Calories == overlap$Calories_wide)
+
+cat("Overlapping minutes:", nrow(overlap), "\n")
+cat("Overlapping readings match:", overlap_matches, "\n")
+
+cat(
+  "Minutes only in narrow file:",
+  sum(is.na(calorie_comparison$Calories_wide)),
+  "\n"
+)
+
+cat(
+  "Minutes only in wide file:",
+  sum(is.na(calorie_comparison$Calories)),
+  "\n"
+)
+
+stopifnot(nrow(overlap) > 0, overlap_matches)
+
+calorie_comparison <- calorie_comparison %>%
+  mutate(
+    Calories = coalesce(Calories, Calories_wide),
+    hour = as.integer(format(ActivityMinute, "%H", tz = "UTC"))
+  )
+
+mean_calories_by_hour <- calorie_comparison %>%
+  group_by(hour) %>%
+  summarise(
+    mean_calories = mean(Calories),
+    .groups = "drop"
+  )
+```
+
+**Observation:** The two calorie files agree on their overlapping minutes.
+They also cover some different minutes, so combining the files fills in
+additional records beyond either file alone.
+
+## Calories by hour
+
+```{r hourly-calories}
+ggplot(mean_calories_by_hour, aes(x = hour, y = mean_calories)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "Average Calories per Minute by Hour of Day",
+    x = "Hour of the day (0-23)",
+    y = "Average calories per minute"
+  )
+```
+
+**Observation:** The hourly calorie pattern is similar to the intensity
+pattern, with higher averages during the day and a peak around 18:00.
+These averages combine recorded minutes across participants; those with
+more recorded minutes at a given hour contribute more to that hour's
+average. The results describe this dataset rather than everyone generally.
+
+The calorie plot uses the combined calorie files, while the intensity plot
+uses the intensity file, so their recording coverage is not identical.
+
+## Summary statistics
+
+Check the distributions of the calorie and intensity readings.
+The calorie summary and histogram below use the narrow calorie file.
+
+```{r summary-statistics}
+cat("Calories per minute:\n")
+print(summary(calories_narrow$Calories))
+
+cat("Standard deviation:", sd(calories_narrow$Calories), "\n")
+cat("Recorded minutes:", nrow(calories_narrow), "\n")
+cat("Zero-calorie minutes:", sum(calories_narrow$Calories == 0), "\n")
+
+cat("\nIntensity:\n")
+print(summary(intensities$Intensity))
+
+cat("Standard deviation:", sd(intensities$Intensity), "\n")
+cat("Recorded minutes:", nrow(intensities), "\n")
+```
+
+**Observation:** The mean calorie reading is 1.62 per minute and the median
+is 1.22. Only 7 of 1,325,580 readings are zero; this check alone does not
+tell us whether they are valid or recording artefacts, so they are left
+in the analysis.
+
+## Calorie distribution
+
+```{r calorie-distribution}
+ggplot(calories_narrow, aes(x = Calories)) +
+  geom_histogram(bins = 20, fill = "darkorange", colour = "black") +
+  labs(
+    title = "Distribution of Calories per Minute",
+    x = "Calories per minute",
+    y = "Count"
+  )
+```
+
+**Observation:** Most minute-level calorie readings are toward the lower
+end of the scale, with a smaller number of higher readings.
+
+## Dashboard requirements
+
+### Functional
+
+- Show average calories and intensity by hour.
+- Let users filter results by date and participant.
+- Compare calories across intensity scores.
+- Combine overlapping calorie files without double-counting; show coverage gaps.
+- Summarise participants and recorded minutes for the selected filters.
+
+### Non-functional
+
+- Keep charts and filters responsive.
+- Ensure calculations are accurate and reproducible.
+- Use clear labels, readable contrast and accessible charts.
+- Protect participant data and avoid exposing IDs unnecessarily.
+- Keep data preparation and dashboard logic easy to maintain.
+
+The functional requirements focus on the comparisons these datasets support:
+how calories and intensity vary by hour, how they relate, and which records
+are available for selected dates and participants. Combining the calorie
+files is useful because their overlapping values match, but each also
+contains minutes not found in the other.
+
+The non-functional requirements help ensure the dashboard remains responsive
+and its results are clear, reliable and appropriately protected. Showing
+recording coverage helps users avoid interpreting unrecorded minutes as
+zero activity.
