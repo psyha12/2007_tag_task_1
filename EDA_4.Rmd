@@ -2,7 +2,9 @@
 title: "EDA_4"
 author: "Arlo"
 date: "2026-10-16"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r}
@@ -168,4 +170,16 @@ ggplot(
 - Activity trends
 
 
+# Functional Requirements
+- Allow users to filter data by date range
+- Display activity intensity levels
+- Identify nights with poor sleep
+- Compare time in bed against minutes asleep
+- Display summary stats
 
+# Non-functional requirements
+- Provide clear error messages
+- Filters work within 5s
+- Use accessible colour schemes
+- Develop using reproducible R shiny
+- Contrast text and background
