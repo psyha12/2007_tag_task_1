@@ -1,8 +1,3 @@
 DSDA_TAG_tasks.pdf
 /data/
-
-# Python + uv
-pyproject.toml
-uv.lock
-.python-version
-.venv
+.Rproj.user
