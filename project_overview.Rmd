@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Context 
+### Context
 
 Our TAG (Training Assessment Group) team has been to build an interactive dashboard that allows users to explore FitBit data. This project forms part of the DATA2007 team working skills assessment and is a practice for the Assessed Group Project (AGP) in January 2027.
 
@@ -30,7 +30,7 @@ The idea comes from a simple problem: people who exercise with friends want an e
 
 **Scope:** Account creation and group joining are part of the platform concept, but the prototype only covers exploring the sample data.
 
-### Target Users 
+### Target Users
 
 The primary users of the dashboard are athletes who are interested in tracking their activity within friendship groups. In the future, the same platform could support people just starting their fitness journey, or anyone who wants a personalised view focused on their own specific goals.
 
@@ -38,7 +38,7 @@ The primary users of the dashboard are athletes who are interested in tracking t
 
 The dataset was collected through a survey on Amazon Mechanical Turk between 3 and December 2016. Thirty FitBit users consented ro share their data. It is provided as 18 CSV files, each covering a different measurement type.
 
-#### Questions the dashboard should answer 
+#### Questions the dashboard should answer
 
 The dashboard shall help users answer questions such as:
 
@@ -48,20 +48,20 @@ The dashboard shall help users answer questions such as:
 - What exercise patterns show up across the group?
 - How do heart rate and calorie expenditure differ between users?
 
-#### What the dashboard provides 
+#### What the dashboard provides
 
 - Visualisations of activity data
 - Side-by-side comparisons between users
 - Personal and group performance metrics
 - Insights into exercise habits and behaviour
 
-### Requirements 
+### Requirements
 
-As a team, we have written ... user requirements (the brief asks for 25 to 40) using the Easy Approach to Requirements Syntax (EARS). The full list is in (add links to requirements file).
+As a team, we wrote the user requirements (the brief asks for 25 to 40) we followed the Easy Approach to Requirements Syntax (EARS). Requirements are grouped by theme so they are easier to trace back to the features we build and test.
 
-Requirements are grouped by theme so they are easier to trace back to the features we build and test.
+The list of requirements can be found using the link below:
 
-Add table for requirements reference
+[Click here to open the report](https://uniofnottm-my.sharepoint.com/:w:/r/personal/psymh18_nottingham_ac_uk/Documents/TAG%20Fitbit%20Dashboard%20Requiremnts.docx?d=w66c2249cf0274befb65614d54d7f0a19&csf=1&web=1&e=BuPGye).
 
 ### Project Approach
 
