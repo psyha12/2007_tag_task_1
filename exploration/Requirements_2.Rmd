@@ -1,0 +1,40 @@
+---
+title: "Requirements_2"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+## Requirements
+
+### Ubiquitous
+
+- *R01*: The system shall display the total number of participants represented in the selected dataset.
+- *R02*: The system shall display an interactive histogram of daily step counts.
+- *R03*: The system shall display average hourly calorie expenditure using an interactive line chart.
+
+### Event-driven
+
+- *R04*: WHEN a user selects a participant, the system shall update the activity visualisations to display that participant's records.
+- *R05*: WHEN a user changes the date range, the system shall update all activity visualisations to reflect the selected period.
+- *R06*: WHEN a user hovers over a data point, the system shall display its associated date or time and available activity measurements.
+
+### Error handling
+
+- *R07*: IF no records match the selected filters, THEN the system shall display a message indicating that no matching data is available.
+- *R08*: IF a measurement required for a calculation is missing, THEN the system shall exclude that measurement from the calculation and report the number of excluded records. 
+
+### State-driven
+- *R09*: WHILE a participant filter is active, the system shall apply the selected participant consistently across all activity visualisations.
+
+### Optional
+
+- *R10*: WHERE data export is enabled, the system shall provide an option to download the filtered observations as a CSV file.
+
+## Proposed visualisations(filterable by person/Id).
+
+- Histogram of daily steps
+- Scatter graph plotting steps against calories if these two datasets are joined
+- Steps by day - This will be a bit pointless though because it is only two days
+- Average calories per hour
