@@ -39,21 +39,61 @@ dailyActivity <- read_csv("Data/dailyActivity_merged.csv") %>%
 dailyCalories <- read_csv("Data/dailyCalories_merged.csv") %>% 
   clean_names()
 
+
 dailyIntensities <- read_csv("Data/dailyIntensities_merged.csv") %>% 
   clean_names()
 
 
 
-
 # 1. Check data ------------------------------------------------------------
+# what
+names(dailyActivity)
+# daily steps, distance, sedentry - active minutes, daily calories
+names(dailyCalories)
+# just daily calories
+names(dailyIntensities)
+# sedentry - active minutes
+
+# check if data is the same- if so daily activity is the only dataset needed as duplicated in calories and intensities 
+
+
+
 # check NA's
 colSums(is.na(dailyActivity))
 colSums(is.na(dailyCalories))
 colSums(is.na(dailyIntensities))
+# no NA's
+
 # check duplicates
 sum(duplicated(dailyActivity))
 sum(duplicated(dailyCalories))
 sum(duplicated(dailyIntensities))
+# no dulicates
+
+# check users
+n_distinct(dailyActivity$id)
+n_distinct(dailyCalories$id)
+n_distinct(dailyIntensities$id)
+setequal(dailyActivity$id, dailyCalories$id)
+setequal(dailyActivity$id, dailyIntensities$id)
+
+# consistent date format needed
+dailyActivity$date <- as.Date(dailyActivity$activity_date,
+                              format = "%m/%d/%Y")
+
+dailyCalories$date <- as.Date(dailyCalories$activity_day,
+                              format = "%m/%d/%Y")
+
+dailyIntensities$date <- as.Date(dailyIntensities$activity_day,
+                                 format = "%m/%d/%Y")
+
+range.Date(dailyActivity$date)
+range.Date(dailyCalories$date)
+range.Date(dailyIntensities$date)
+# all datasets have the same range "2016-04-12" "2016-05-12"
+
+
+
 
 
 
@@ -66,6 +106,8 @@ summary(dailyIntensities)
 skim(dailyActivity)
 skim(dailyCalories)
 skim(dailyIntensities)
+
+
 
 
 # 3. Visuals --------------------------------------------------------------
@@ -111,15 +153,6 @@ dailyActivity %>%
 
 
 # 4. Join -----------------------------------------------------------------
-# consistent date format needed
-dailyActivity$date <- as.Date(dailyActivity$activity_date,
-                              format = "%m/%d/%Y")
-
-dailyCalories$date <- as.Date(dailyCalories$activity_day,
-                              format = "%m/%d/%Y")
-
-dailyIntensities$date <- as.Date(dailyIntensities$activity_day,
-                                 format = "%m/%d/%Y")
 
 
 
@@ -173,8 +206,8 @@ summary <- cleaned_merged_data %>%
 p <- ggplot(
   cleaned_merged_data,
   aes(
-    x = total_steps,
-    y = calories
+    x = activity_total_steps,
+    y = activity_calories
   )
 ) +
   geom_point(alpha = .6) +
@@ -192,11 +225,8 @@ ggplotly(p)
 # sedentry time vs calories
 p <- ggplot(
   cleaned_merged_data,
-  aes(
-    very_active_minutes,
-    calories
-  )
-) +
+  aes(very_active_minutes,
+      calories)) +
   geom_point(alpha = .6) +
   geom_smooth(
     method = "lm",
@@ -210,7 +240,7 @@ ggplotly(p)
 
 
 # leaderboard
-top10 <- summary_df %>%
+top10 <- summary %>%
   arrange(desc(avg_steps)) %>%
   head(10)
 
@@ -227,7 +257,7 @@ plot_ly(
   )
 
 # bottomboard
-bottom10 <- summary_df %>%
+bottom10 <- summary %>%
   arrange(avg_steps) %>%
   head(10)
 
@@ -245,7 +275,7 @@ plot_ly(
 
 
 plot_ly(
-  summary_df,
+  summary,
   x = ~avg_active,
   y = ~avg_sedentary,
   type = "scatter",
@@ -273,7 +303,7 @@ plot_ly(
   )
 
 
-summary_df %>%
+summary %>%
   summarise(
     average_steps = mean(avg_steps),
     average_calories = mean(avg_calories),
