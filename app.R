@@ -3,10 +3,12 @@ library(shinydashboard)
 library(plotly)
 library(dplyr)
 
-# Load everything
-# source("R/functions/kpi_cards.R")
-# source("R/functions/leaderboard.R")
 
+# GLOBAL
+# Loads all source libraries / data / environmental variables / functions
+source("R/global/global.R")
+
+# ui tabs 
 source("R/pages/mod_activity.R")
 source("R/pages/mod_calories.R")
 source("R/pages/mod_heartrate.R")
@@ -74,7 +76,9 @@ ui <- dashboardPage(
 
 # ----- Server -----
 server <- function(input, output, session){
-  
+  # Activity 
+  source("R/server/server_activty.R", local = TRUE)
+
 }
 
 shinyApp(ui, server)
