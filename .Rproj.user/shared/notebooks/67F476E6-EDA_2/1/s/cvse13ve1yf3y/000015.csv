@@ -1,0 +1,8 @@
+"0","daily_steps %>%"
+"0","  summarise("
+"0","    MeanSteps = mean(StepTotal, na.rm = TRUE),"
+"0","    MedianSteps = median(StepTotal, na.rm = TRUE),"
+"0","    MinSteps = min(StepTotal, na.rm = TRUE),"
+"0","    MaxSteps = max(StepTotal, na.rm = TRUE),"
+"0","    SDSteps = sd(StepTotal, na.rm = TRUE)"
+"0","  )"

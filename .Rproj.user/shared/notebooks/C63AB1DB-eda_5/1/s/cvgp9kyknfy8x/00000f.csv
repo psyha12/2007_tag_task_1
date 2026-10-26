@@ -1,0 +1,7 @@
+"0","ggplot(mean_calories_by_hour, aes(x = hour, y = mean_calories)) +"
+"0","  geom_col(fill = ""steelblue"") +"
+"0","  labs("
+"0","    title = ""Average Calories per Minute by Hour of Day"","
+"0","    x = ""Hour of the day (0-23)"","
+"0","    y = ""Average calories per minute"""
+"0","  )"

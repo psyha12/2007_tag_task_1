@@ -24,7 +24,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-data_folder <- "data"
+data_folder <- "../data"
 
 calories_narrow <- read_csv(
   file.path(data_folder, "minuteCaloriesNarrow_merged.csv"),

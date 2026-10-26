@@ -1,0 +1,177 @@
+---
+title: "EDA 6: Minute Intensities and Steps"
+output: html_document
+---
+
+Files looking at:
+
+- `minuteIntensitiesWide_merged`
+- `minuteStepsNarrow_merged`
+- `minuteStepsWide_merged`
+
+```{r setup, message=FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+### Load Data
+
+```{r load}
+DATA_LOC <- "../data/"
+
+minute_intensities_wide <- read_csv(paste0(DATA_LOC, "minuteIntensitiesWide_merged.csv"))
+minute_steps_narrow     <- read_csv(paste0(DATA_LOC, "minuteStepsNarrow_merged.csv"))
+minute_steps_wide       <- read_csv(paste0(DATA_LOC, "minuteStepsWide_merged.csv"))
+
+datasets <- list(minute_intensities_wide = minute_intensities_wide,
+                 minute_steps_narrow     = minute_steps_narrow,
+                 minute_steps_wide       = minute_steps_wide)
+```
+
+### Missing Values
+
+```{r missing}
+for (name in names(datasets)) {
+  na_counts <- colSums(is.na(datasets[[name]]))
+  cat("\n", name, ":\n", sep = "")
+  print(na_counts[na_counts > 0])
+}
+```
+
+### Duplicate Rows
+
+```{r duplicates}
+for (name in names(datasets)) {
+  cat("\n", name, ":\n", sum(duplicated(datasets[[name]])), "\n", sep = "")
+}
+```
+
+### Observation
+
+Data is very clean
+
+### Intensity by Hour
+
+```{r intensity-by-hour}
+parse_time <- function(x) as.POSIXct(x, format = "%m/%d/%Y %I:%M:%S %p", tz = "UTC")
+hour_of <- function(x) as.integer(format(x, "%H"))
+
+avg_intensities_per_hour <- minute_intensities_wide %>%
+  mutate(hour = hour_of(parse_time(ActivityHour))) %>%
+  group_by(hour) %>%
+  summarise(across(starts_with("Intensity"), mean)) %>%
+  transmute(hour, avg_intensity = rowSums(across(starts_with("Intensity"))))
+
+ggplot(avg_intensities_per_hour, aes(hour, avg_intensity)) +
+  geom_col() +
+  labs(title = "Average Total Intensity by Hour of Day",
+       x = "Hour of the Day (0-23)", y = "Average Intensity")
+```
+
+### Observation
+
+Follows typical intensity throught the day
+
+### Compare Steps Files
+
+```{r compare-steps}
+# pivot minute_steps_wide to narrow format to compare the data
+minute_steps_melt <- minute_steps_wide %>%
+  pivot_longer(starts_with("Steps"), names_to = "minute", values_to = "Steps") %>%
+  mutate(ActivityMinute = parse_time(ActivityHour) + 60 * as.numeric(substr(minute, nchar(minute) - 1, nchar(minute)))) %>%
+  select(Id, ActivityMinute, Steps)
+
+minute_steps_narrow <- minute_steps_narrow %>%
+  mutate(ActivityMinute = parse_time(ActivityMinute))
+
+# Merge data
+merged_steps <- full_join(minute_steps_melt, minute_steps_narrow,
+                          by = c("Id", "ActivityMinute"), suffix = c("_wide", "_narrow")) %>%
+  mutate(Steps = coalesce(Steps_wide, Steps_narrow))
+
+# Check overlapping data is correct
+overlap <- merged_steps %>% filter(!is.na(Steps_wide), !is.na(Steps_narrow))
+cat("Overlapping rows match:", all(overlap$Steps_wide == overlap$Steps_narrow))
+```
+
+### Observation
+
+Overlapping data is the same
+
+### Steps by Hour
+
+```{r steps-by-hour}
+merged_steps <- merged_steps %>%
+  mutate(hour = hour_of(ActivityMinute), date = as.Date(ActivityMinute))
+
+avg_steps_per_hour <- merged_steps %>%
+  group_by(hour) %>%
+  summarise(avg_steps = mean(Steps))
+
+ggplot(avg_steps_per_hour, aes(hour, avg_steps)) +
+  geom_col() +
+  labs(title = "Average Steps per Minute by Hour of Day",
+       x = "Hour of the Day (0-23)", y = "Average Steps per minute")
+```
+
+### Observation
+
+Follows the intensity distribution and typical steps per hour of the day.
+
+### Records and Participants
+
+```{r records}
+for (name in names(datasets)) {
+  cat(sprintf("%s: %d rows, %d participants\n",
+              name, nrow(datasets[[name]]), n_distinct(datasets[[name]]$Id)))
+}
+```
+
+### Observation
+
+All three files cover the same 33 participants. The narrow file has more rows than the wide file melted (1,325,580 vs 21,645 × 60 = 1,298,700) so the two do not cover exactly the same minutes.
+
+### Date and Time Coverage
+
+```{r coverage}
+range(merged_steps$date)
+
+merged_steps %>%
+  group_by(Id) %>%
+  summarise(days = n_distinct(date)) %>%
+  pull(days) %>%
+  summary()
+```
+
+### Observation
+
+Data spans 32 days (2016-04-12 to 2016-05-13). Most participants have 28-32 days of data, but at least one has only 4.
+
+### Distributions and Outliers
+
+```{r distributions, fig.width=10, fig.height=4}
+# Distribution of steps per minute and outliers in daily steps
+daily_steps <- merged_steps %>%
+  group_by(Id, date) %>%
+  summarise(Steps = sum(Steps), .groups = "drop")
+
+summary(merged_steps$Steps)
+
+ggplot(merged_steps, aes(Steps)) +
+  geom_histogram(bins = 50) +
+  scale_y_log10() +
+  labs(title = "Steps per Minute", y = "Count (log scale)")
+
+ggplot(daily_steps, aes(y = Steps)) +
+  geom_boxplot() +
+  labs(title = "Daily Steps per Participant") +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+```
+
+### Observation
+
+Steps per minute is heavily skewed towards zero (median and 75th percentile are 0, max is 220). Daily steps have a few high outliers (max ~36,000 vs a median of ~7,300).

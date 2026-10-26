@@ -1,0 +1,3 @@
+"0","daily_steps <- read.csv(""../data/dailySteps_merged.csv"")"
+"0","hourly_calories <- read.csv(""../data/hourlyCalories_merged.csv"")"
+"0","hourly_intensities <- read.csv(""../data/hourlyIntensities_merged.csv"")"

@@ -1,0 +1,7 @@
+"0","hourly_combined <- hourly_calories %>%"
+"0","  inner_join("
+"0","    hourly_intensities,"
+"0","    by = c(""Id"", ""ActivityHour""),"
+"0","    relationship = ""one-to-one"""
+"0","  )"
+"0","hourly_combined"

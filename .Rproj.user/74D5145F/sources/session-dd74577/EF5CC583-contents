@@ -1,0 +1,57 @@
+---
+title: "EDA_2"
+output: html_document
+---
+
+## EDA
+
+This analysis is looking at the following files:
+
+```         
+dailySteps_merged.csv
+hourlyCalories_merged.csv
+hourlyIntensities_merged.csv
+```
+
+The data was collected from a survey that was distributed between the dates 03.12.2016 - 05.12.2026
+
+- Number of records and part
+- Missing values
+- Duplicate rows
+- Date/time coverage
+- Distribution of key measures
+- Outliers/anomalies
+- Potential joins to other datasets
+- Interesting patterns and visualisations
+```{r}
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(plotly)
+```
+
+```{r load-data}
+daily_activity <- read.csv('data/dailySteps_merged.csv') 
+# Id, ActivityDay, StepTotal
+hourly_calories <- read.csv('data/hourlyCalories_merged.csv') 
+# Id, ActivityHour, Calories
+hourly_intensities <- read.csv('data/hourlyIntensities_merged.csv') 
+# Id, ActivityHour, TotalIntensity, AverageIntensity
+```
+
+```{r shape}
+# Number of rows and columns
+dim(daily_activity)
+dim(hourly_calories)
+dim(hourly_intensities)
+
+# Column names and data types
+glimpse(daily_activity)
+glimpse(hourly_calories)
+glimpse(hourly_intensities)
+
+# Unique participants
+n_distinct(daily_activity$Id)
+n_distinct(hourly_calories$Id)
+n_distinct(hourly_intensities$Id)
+```

@@ -1,0 +1,214 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "fa0639e5",
+   "metadata": {},
+   "source": [
+    "Files looking at:\n",
+    "- `minuteIntensitiesWide_merged`\n",
+    "- `minuteStepsNarrow_merged`\n",
+    "- `minuteStepsWide_merged`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "50621e48",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1be554f6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Load data\n",
+    "DATA_LOC = '../data/'\n",
+    "\n",
+    "minute_intensities_wide = pd.read_csv(f'{DATA_LOC}minuteIntensitiesWide_merged.csv')\n",
+    "minute_steps_narrow     = pd.read_csv(f'{DATA_LOC}minuteStepsNarrow_merged.csv')\n",
+    "minute_steps_wide       = pd.read_csv(f'{DATA_LOC}minuteStepsWide_merged.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0b55d26b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Find the count of missing values\n",
+    "print('Missing values')\n",
+    "\n",
+    "na_counts = minute_intensities_wide.isna().sum()\n",
+    "print(f'\\nminute_intensities_wide:\\n{na_counts.loc[na_counts > 0]}')\n",
+    "\n",
+    "na_counts = minute_steps_narrow.isna().sum()\n",
+    "print(f'\\nminute_steps_narrow:\\n{na_counts.loc[na_counts > 0]}')\n",
+    "\n",
+    "na_counts = minute_steps_wide.isna().sum()\n",
+    "print(f'\\nminute_steps_wide:\\n{na_counts.loc[na_counts > 0]}')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0fc63678",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Duplicated rows\n",
+    "print('Duplicated rows')\n",
+    "\n",
+    "print(f'minute_intensities_wide:\\n{minute_intensities_wide.duplicated().sum()}')\n",
+    "\n",
+    "print(f'\\nminute_steps_narrow:\\n{minute_steps_narrow.duplicated().sum()}')\n",
+    "\n",
+    "print(f'\\nminute_steps_wide:\\n{minute_steps_wide.duplicated().sum()}')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c12636e2",
+   "metadata": {},
+   "source": [
+    "### Observation\n",
+    "\n",
+    "Data is very clean"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9744db25",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Check minute_intensities_wide\n",
+    "DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'\n",
+    "\n",
+    "minute_intensities_wide['time'] = pd.to_datetime(minute_intensities_wide['ActivityHour'], format=DATE_FORMAT).dt.hour\n",
+    "\n",
+    "avg_intensities_per_hour = minute_intensities_wide.drop(columns='Id').groupby('time').mean(numeric_only=True).sum(axis=1)\n",
+    "\n",
+    "fig, ax = plt.subplots()\n",
+    "\n",
+    "ax.bar(avg_intensities_per_hour.index, avg_intensities_per_hour)\n",
+    "ax.set_title('Average Total Intensity by Hour of Day')\n",
+    "ax.set_xlabel('Hour of the Day (0-23)')\n",
+    "ax.set_ylabel('Average Intensity')\n",
+    "\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b15949a2",
+   "metadata": {},
+   "source": [
+    "### Observation\n",
+    "\n",
+    "Follows typical intensity throught the day"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "16129db4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# melt minute_steps_wide to narrow format to compare the data\n",
+    "\n",
+    "minute_steps_melt = minute_steps_wide.melt(id_vars=['Id', 'ActivityHour'], var_name='minute', value_name='Steps')\n",
+    "\n",
+    "minute_steps_melt['ActivityHour'] = pd.to_datetime(minute_steps_melt['ActivityHour'], format=DATE_FORMAT)\n",
+    "minute_steps_melt['minute'] = pd.to_timedelta(pd.to_numeric(minute_steps_melt['minute'].str[-2:]), unit='minutes')\n",
+    "\n",
+    "minute_steps_melt['ActivityMinute'] = minute_steps_melt['ActivityHour'] + minute_steps_melt['minute']\n",
+    "minute_steps_melt = minute_steps_melt[['Id', 'ActivityMinute', 'Steps']]\n",
+    "\n",
+    "\n",
+    "minute_steps_narrow['ActivityMinute'] = pd.to_datetime(minute_steps_narrow['ActivityMinute'], format=DATE_FORMAT)\n",
+    "\n",
+    "# Merge data\n",
+    "merged_steps = minute_steps_melt.merge(minute_steps_narrow, on=['Id', 'ActivityMinute'], how='outer', suffixes=('_wide', '_narrow'))\n",
+    "\n",
+    "merged_steps['Steps'] = merged_steps['Steps_wide'].fillna(merged_steps['Steps_narrow'])\n",
+    "\n",
+    "# Check overlapping data is correct\n",
+    "overlap = merged_steps.dropna(subset=['Steps_wide', 'Steps_narrow'])\n",
+    "print(f'Overlapping rows match: {(overlap[\"Steps_wide\"] == overlap[\"Steps_narrow\"]).all()}')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "19cc8401",
+   "metadata": {},
+   "source": [
+    "### Observation\n",
+    "\n",
+    "Overlapping data is the same"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "06c795af",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Plot graph\n",
+    "merged_steps['hour'] = merged_steps['ActivityMinute'].dt.hour\n",
+    "avg_steps_per_hour = merged_steps.groupby('hour')['Steps'].mean()\n",
+    "\n",
+    "fig, ax = plt.subplots()\n",
+    "\n",
+    "ax.bar(avg_steps_per_hour.index, avg_steps_per_hour)\n",
+    "ax.set_title('Average Steps per Minute by Hour of Day')\n",
+    "ax.set_xlabel('Hour of the Day (0-23)')\n",
+    "ax.set_ylabel('Average Steps per minute')\n",
+    "\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5f581559",
+   "metadata": {},
+   "source": [
+    "### Observation\n",
+    "\n",
+    "Follows the intensity distribution and typical steps per hour of the day."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "2007_tag_task_1",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
