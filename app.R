@@ -3,9 +3,7 @@ library(shinydashboard)
 library(plotly)
 library(dplyr)
 
-# Load everything
-source("R/functions/kpi_calculations.R")
-source("R/functions/shiny_helpers.R")
+# Source Relevant Components 
 source("R/functions/kpi_boxes.R")
 
 source("R/pages/mod_activity.R")
