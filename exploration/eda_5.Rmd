@@ -291,7 +291,8 @@ use only recorded minutes, so missing time is not treated as inactivity.
 Each plot is also saved to the `img` folder.
 
 ```{r dashboard-data}
-dir.create("img", showWarnings = FALSE)
+img_folder <- "../img"
+dir.create(img_folder, showWarnings = FALSE, recursive = TRUE)
 
 # Hours need at least 45 recorded minutes to be compared fairly
 min_minutes <- 45
@@ -427,7 +428,7 @@ selected_date <- example_hour$date[[1]]
 
 calorie_plot <- plot_hourly_calories(selected_id, selected_date)
 ggsave(
-  "img/hourly_calories.png", calorie_plot,
+  file.path(img_folder, "hourly_calories.png"), calorie_plot,
   width = 10, height = 5, dpi = 120, bg = "white"
 )
 calorie_plot
@@ -531,7 +532,7 @@ intensity_plot <- plot_intensity_comparison(
   comparison_ids, min(shared_dates), max(shared_dates)
 )
 ggsave(
-  "img/activity_intensity.png", intensity_plot,
+  file.path(img_folder, "activity_intensity.png"), intensity_plot,
   width = 10, height = 5, dpi = 120, bg = "white"
 )
 intensity_plot
