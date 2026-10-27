@@ -1,8 +1,0 @@
-"0","daily_steps <- daily_steps %>%"
-"0","  mutate(ActivityDay = mdy(ActivityDay))"
-"0",""
-"0","hourly_calories <- hourly_calories %>%"
-"0","  mutate(ActivityHour = mdy_hms(ActivityHour))"
-"0",""
-"0","hourly_intensities <- hourly_intensities %>%"
-"0","  mutate(ActivityHour = mdy_hms(ActivityHour))"

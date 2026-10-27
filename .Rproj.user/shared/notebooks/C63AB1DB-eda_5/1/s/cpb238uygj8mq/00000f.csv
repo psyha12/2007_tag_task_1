@@ -1,7 +1,0 @@
-"0","ggplot(calories_narrow, aes(x = Calories)) +"
-"0","  geom_histogram(bins = 20, fill = ""darkorange"", colour = ""black"") +"
-"0","  labs("
-"0","    title = ""Distribution of Calories per Minute"","
-"0","    x = ""Calories per minute"","
-"0","    y = ""Count"""
-"0","  )"

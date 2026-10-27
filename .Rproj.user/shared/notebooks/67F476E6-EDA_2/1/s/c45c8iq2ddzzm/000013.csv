@@ -1,4 +1,0 @@
-"0",""
-"0","hourly_intensities %>%"
-"0","  count(Id, ActivityHour) %>%"
-"0","  filter(n > 1)"
