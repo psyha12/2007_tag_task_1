@@ -5,10 +5,6 @@ source("R/global/functions/leaderboard_function.R")
 source("R/global/functions/utils.R")
 source("R/global/data/data_prep.R")
 source("R/global/data/load_sleep_data.R")
-source("R/global/functions/kpi_boxes.R")
-source("R/global/functions/leaderboard_function.R")
-source("R/global/functions/utils.R")
-source("R/global/data/load_sleep_data.R")
 
 sleep_data <- load_sleep_data()
 
