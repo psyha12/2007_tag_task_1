@@ -55,4 +55,3 @@ create_leaderboard <- function(
   leaderboard
   
 }
-
