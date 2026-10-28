@@ -24,9 +24,7 @@ mod_sleep_server <- function(input, output, session) {
     req(input$sleep_user)
     
     sleep_day %>%
-      filter(
-        Id == input$sleep_user
-      )
+      filter(Id == input$sleep_user)
     
   })
   
@@ -64,7 +62,7 @@ mod_sleep_server <- function(input, output, session) {
       rownames = FALSE,
       
       options = list(
-        pageLength = 3,
+        pageLength = 5,
         dom = "tp"
       )
       
@@ -159,18 +157,12 @@ mod_sleep_server <- function(input, output, session) {
       )
     
     selected_sleep <- avg_sleep %>%
-      filter(
-        Id == input$sleep_user
-      ) %>%
-      pull(
-        AvgSleep
-      )
+      filter(Id == input$sleep_user) %>%
+      pull(AvgSleep)
     
     p <- ggplot(
       avg_sleep,
-      aes(
-        x = AvgSleep
-      )
+      aes(x = AvgSleep)
     ) +
       
       geom_histogram(
@@ -242,9 +234,7 @@ mod_sleep_server <- function(input, output, session) {
       )
     ) +
       
-      geom_point(
-        size = 4
-      ) +
+      geom_point(size = 4) +
       
       scale_colour_manual(
         values = c(
@@ -265,64 +255,35 @@ mod_sleep_server <- function(input, output, session) {
     
   })
   
-  output$sleep_efficiency_rank <- renderPlotly({
+  output$sleep_state_breakdown <- renderPlotly({
     
     req(input$sleep_user)
     
-    ranking <- sleep_day %>%
-      group_by(Id) %>%
-      summarise(
-        Efficiency = mean(
-          SleepEfficiency,
-          na.rm = TRUE
-        ),
-        .groups = "drop"
+    sleep_states <- minute_sleep %>%
+      filter(
+        as.character(Id) == as.character(input$sleep_user)
       ) %>%
-      arrange(
-        desc(Efficiency)
-      )
-    
-    ranking$Highlight <- ifelse(
-      ranking$Id == input$sleep_user,
-      "You",
-      "Other Users"
-    )
-    
-    p <- ggplot(
-      ranking,
-      aes(
-        x = reorder(
-          as.factor(Id),
-          Efficiency
-        ),
-        y = Efficiency,
-        fill = Highlight
-      )
-    ) +
-      
-      geom_col() +
-      
-      scale_fill_manual(
-        values = c(
-          "Other Users" = "grey70",
-          "You" = "dodgerblue"
+      mutate(
+        State = case_when(
+          value == 1 ~ "Asleep",
+          value == 2 ~ "Restless",
+          value == 3 ~ "Awake"
         )
-      ) +
-      
-      labs(
-        title = "Sleep Efficiency Rankings",
-        x = "User",
-        y = "Sleep Efficiency (%)"
-      ) +
-      
-      theme_minimal() +
-      
-      theme(
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()
-      )
+      ) %>%
+      count(State)
     
-    ggplotly(p)
+    req(nrow(sleep_states) > 0)
+    
+    plot_ly(
+      sleep_states,
+      labels = ~State,
+      values = ~n,
+      type = "pie",
+      hole = 0.5
+    ) %>%
+      layout(
+        title = "Sleep State Breakdown"
+      )
     
   })
   

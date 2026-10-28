@@ -34,10 +34,10 @@ mod_sleep_ui <- function() {
             ",
             
             "$$
-            Sleep\\ Efficiency=
+            Sleep\\ Efficiency =
             \\frac{Total\\ Minutes\\ Asleep}
             {Total\\ Time\\ In\\ Bed}
-            \\times100
+            \\times 100
             $$
             "
             
@@ -100,7 +100,7 @@ mod_sleep_ui <- function() {
         
         plotlyOutput(
           "sleep_distribution",
-          height = "300px"
+          height = "350px"
         )
         
       )
@@ -116,7 +116,7 @@ mod_sleep_ui <- function() {
         
         plotlyOutput(
           "sleep_activity",
-          height = "300px"
+          height = "350px"
         )
         
       ),
@@ -124,11 +124,11 @@ mod_sleep_ui <- function() {
       box(
         
         width = 6,
-        title = "Sleep Efficiency Rankings",
+        title = "Sleep State Breakdown",
         
         plotlyOutput(
-          "sleep_efficiency_rank",
-          height = "300px"
+          "sleep_state_breakdown",
+          height = "350px"
         )
         
       )
