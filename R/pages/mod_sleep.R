@@ -15,54 +15,72 @@ mod_sleep_ui <- function() {
     
     fluidRow(
       
-      box(
+      column(
         
         width = 9,
-        title = "Sleep Efficiency",
         
-        withMathJax(),
-        
-        div(
-          style = "text-align:center; padding:20px; font-size:24px;",
+        box(
           
-          "$$
-          Sleep\\ Efficiency=
-          \\frac{Total\\ Minutes\\ Asleep}
-          {Total\\ Time\\ In\\ Bed}
-          \\times100
-          $$
-          "
+          width = 12,
+          title = "Sleep Efficiency",
           
-        )
-        
-      ),
-      
-      box(
-        
-        width = 3,
-        title = "Leaderboard",
-        
-        dateRangeInput(
-          "sleep_dates",
-          "Select date range:"
+          withMathJax(),
+          
+          div(
+            style = "
+              text-align:center;
+              padding:25px;
+              font-size:22px;
+            ",
+            
+            "$$
+            Sleep\\ Efficiency=
+            \\frac{Total\\ Minutes\\ Asleep}
+            {Total\\ Time\\ In\\ Bed}
+            \\times100
+            $$
+            "
+            
+          )
+          
         ),
         
-        DTOutput(
-          "sleep_leaderboard"
+        fluidRow(
+          
+          valueBoxOutput(
+            "avg_efficiency",
+            width = 6
+          ),
+          
+          valueBoxOutput(
+            "avg_sleep",
+            width = 6
+          )
+          
         )
         
-      )
-      
-    ),
-    
-    fluidRow(
-      
-      valueBoxOutput(
-        "avg_efficiency"
       ),
       
-      valueBoxOutput(
-        "avg_sleep"
+      column(
+        
+        width = 3,
+        
+        box(
+          
+          width = 12,
+          title = "Sleep Efficiency Leaderboard",
+          
+          dateRangeInput(
+            "sleep_dates",
+            "Rank users between:"
+          ),
+          
+          DTOutput(
+            "sleep_leaderboard"
+          )
+          
+        )
+        
       )
       
     ),
@@ -76,13 +94,13 @@ mod_sleep_ui <- function() {
         
         selectInput(
           "sleep_user",
-          "Select an ID to View",
+          "Select Participant ID",
           choices = NULL
         ),
         
         plotlyOutput(
           "sleep_distribution",
-          height = "350px"
+          height = "300px"
         )
         
       )
@@ -98,7 +116,7 @@ mod_sleep_ui <- function() {
         
         plotlyOutput(
           "sleep_activity",
-          height = "350px"
+          height = "300px"
         )
         
       ),
@@ -106,11 +124,11 @@ mod_sleep_ui <- function() {
       box(
         
         width = 6,
-        title = "Sleep Efficiency Ranking",
+        title = "Sleep Efficiency Rankings",
         
         plotlyOutput(
           "sleep_efficiency_rank",
-          height = "350px"
+          height = "300px"
         )
         
       )
