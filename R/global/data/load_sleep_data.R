@@ -2,11 +2,33 @@
 # Returns a named list of tables. Needs data_prep.R sourced first.
 
 load_sleep_data <- function() {
-    list(
-        daily_sleep  = read_fitbit_csv("sleepDay", "SleepDay"),
-
-        # Value: 1 = asleep, 2 = restless, 3 = awake
-        # the raw file has some exact duplicate rows, which are dropped
-        minute_sleep = dplyr::distinct(read_fitbit_csv("minuteSleep", "date"))
+  
+  daily_sleep <- read_fitbit_csv(
+    "sleepDay",
+    "SleepDay"
+  ) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(
+      SleepEfficiency =
+        (TotalMinutesAsleep / TotalTimeInBed) * 100
     )
+  
+  minute_sleep <- read_fitbit_csv(
+    "minuteSleep",
+    "date"
+  ) %>%
+    dplyr::distinct()
+  
+  minute_mets <- read_fitbit_csv(
+    "minuteMETsNarrow",
+    "ActivityMinute"
+  ) %>%
+    dplyr::distinct()
+  
+  list(
+    daily_sleep = daily_sleep,
+    minute_sleep = minute_sleep,
+    minute_mets = minute_mets
+  )
+  
 }
