@@ -22,13 +22,15 @@ mod_activity_ui <- function() {
     
     tabName = "activity",
     
+    
+    # Filters row
     fluidRow(
       
       box(
         width = 12,
-        title = "Activity Leaderboard",
+        title = "Filters",
         
-        # Filters row
+       
         fluidRow(
           column(
             width = 8,
@@ -57,10 +59,15 @@ mod_activity_ui <- function() {
         br(),
       
         # Outputs
+        # Leader board
         fluidRow(
           column(
-            width = 12,
-            # leaderboard
+            width = 8
+            # plots !
+            
+          ),
+          column(
+            width = 4,
             DT::DTOutput("activity_leaderboard")
           )))))
 }
