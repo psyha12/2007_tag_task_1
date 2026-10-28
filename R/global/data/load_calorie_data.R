@@ -1,19 +1,13 @@
-# This script loads and prepares the necessary data for the calorie tab
+# Loads the data for the calories tab
+# Returns a named list of tables. Needs data_prep.R sourced first.
 
-
-# 0. Import Data ----------------------------------------------------------
-
-daily_calories <- read_csv("R/global/data/raw_data/dailyCalories_merged.csv") %>% 
-  clean_names()
-
-
-hourly_calories <- read_csv("R/global/data/raw_data/hourlyCalories_merged.csv") %>% 
-  clean_names()
-
-
-minute_calories_narrow <- read_csv("R/global/data/raw_data/minuteCaloriesNarrow_merged.csv") %>% 
-  clean_names()
-
-
-minute_calories_wide <- read_csv("R/global/data/raw_data/minuteCaloriesNarrow_merged.csv") %>% 
-  clean_names()
+load_calorie_data <- function() {
+    list(
+        daily_calories  = read_fitbit_csv("dailyCalories",         "ActivityDay"),
+        hourly_calories = read_fitbit_csv("hourlyCalories",        "ActivityHour"),
+        minute_calories = merge_narrow_wide(
+            "minuteCaloriesNarrow", "ActivityMinute",
+            "minuteCaloriesWide",   "ActivityHour", "Calories"
+            )
+    )
+}
