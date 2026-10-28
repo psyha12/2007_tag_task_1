@@ -2,4 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-/R/global/data/raw_data
+/data/
+/R/global/data/raw_data/
