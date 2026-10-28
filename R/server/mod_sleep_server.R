@@ -62,7 +62,7 @@ mod_sleep_server <- function(input, output, session) {
       rownames = FALSE,
       
       options = list(
-        pageLength = 5,
+        pageLength = 3,
         dom = "tp"
       )
       
