@@ -1,3 +1,6 @@
+# Loads the data for the sleep tab
+# Returns a named list of tables. Needs data_prep.R sourced first.
+
 load_sleep_data <- function() {
   
   daily_sleep <- read_fitbit_csv(
