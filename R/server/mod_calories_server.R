@@ -19,6 +19,14 @@ observe({
     max = max(daily_calories$ActivityDay, na.rm = TRUE)
   )
   
+  updateDateInput(
+    session,
+    "calories_selected_day",
+    value = min(daily_calories$ActivityDay, na.rm = TRUE),
+    min = min(daily_calories$ActivityDay, na.rm = TRUE),
+    max = max(daily_calories$ActivityDay, na.rm = TRUE)
+  )
+  
 })
 
 # Reactive: Leaderboard data
@@ -220,6 +228,81 @@ output$calories_hourly_plot <- renderPlotly({
       )
     
     ggplotly(p, tooltip = c("x", "y", "colour"))
+    
+  }, error = function(e) {
+    plotly_empty() %>%
+      layout(title = paste("Error:", e$message))
+  })
+  
+})
+
+# Day Total Output (Show calories for selected day)
+output$calories_day_total <- renderText({
+  
+  req(input$calories_athlete_id, input$calories_selected_day)
+  
+  athlete_id <- as.character(input$calories_athlete_id)
+  selected_date <- as.Date(input$calories_selected_day)
+  
+  day_total <- daily_calories %>%
+    filter(Id == athlete_id, ActivityDay == selected_date) %>%
+    pull(Calories)
+  
+  if (length(day_total) == 0 || is.na(day_total)) {
+    "No data for selected date"
+  } else {
+    paste("Total Calories Burned:\n", format(round(day_total), big.mark = ","))
+  }
+  
+})
+
+# Hourly Breakdown Chart (Show hourly calories for selected day)
+output$calories_hourly_breakdown <- renderPlotly({
+  
+  req(input$calories_athlete_id, input$calories_selected_day)
+  
+  tryCatch({
+    
+    athlete_id <- as.character(input$calories_athlete_id)
+    selected_date <- as.Date(input$calories_selected_day)
+    
+    # Get hourly data for selected day
+    hourly_data <- hourly_calories %>%
+      mutate(
+        date = as.Date(ActivityHour, tz = "UTC"),
+        hour = lubridate::hour(ActivityHour)
+      ) %>%
+      filter(Id == athlete_id, date == selected_date) %>%
+      select(hour, calories = Calories) %>%
+      arrange(hour)
+    
+    # If no data, show empty chart
+    if (nrow(hourly_data) == 0) {
+      return(plotly_empty() %>% layout(title = "No hourly data for this date"))
+    }
+    
+    # Create bar chart
+    p <- ggplot(
+      hourly_data,
+      aes(x = hour, y = calories)
+    ) +
+      geom_bar(stat = "identity", fill = "#0072B2", colour = "white") +
+      scale_x_continuous(
+        breaks = seq(0, 23, by = 2),
+        labels = paste0(seq(0, 23, by = 2), ":00")
+      ) +
+      labs(
+        title = "Hourly Calories",
+        x = "Hour of Day",
+        y = "Calories"
+      ) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(face = "bold", size = 12),
+        axis.text.x = element_text(angle = 45, hjust = 1)
+      )
+    
+    ggplotly(p, tooltip = c("x", "y"))
     
   }, error = function(e) {
     plotly_empty() %>%

@@ -81,6 +81,47 @@ mod_calories_ui <- function() {
     
     fluidRow(
       
+      column(
+        width = 6,
+        
+        box(
+          width = 12,
+          title = "Select a Day",
+          
+          dateInput(
+            "calories_selected_day",
+            "Pick a date:",
+            value = NULL
+          ),
+          
+          verbatimTextOutput(
+            "calories_day_total"
+          )
+          
+        )
+        
+      ),
+      
+      column(
+        width = 6,
+        
+        box(
+          width = 12,
+          title = "Hourly Breakdown",
+          
+          plotlyOutput(
+            "calories_hourly_breakdown",
+            height = "250px"
+          )
+          
+        )
+        
+      )
+      
+    ),
+    
+    fluidRow(
+      
       box(
         
         width = 12,
