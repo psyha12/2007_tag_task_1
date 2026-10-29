@@ -9,28 +9,28 @@ An interactive R Shiny dashboard for exploring Fitbit activity data, comparing p
 
 ## Contents
 
-- [Project context](#project-context)
-- [Dashboard concept and scope](#dashboard-concept-and-scope)
-- [Target users](#target-users)
-- [Data source](#data-source)
-- [Dashboard questions and features](#dashboard-questions-and-features)
-- [Group initial EDA summary](#group-initial-eda-summary)
+- [Project Context](#project-context)
+- [Dashboard Concept and Scope](#dashboard-concept-and-scope)
+- [Target Users](#target-users)
+- [Data Source](#data-source)
+- [Dashboard Questions and Features](#dashboard-questions-and-features)
+- [Group Initial EDA summary](#group-initial-eda-summary)
 - [Requirements](#requirements)
-- [Dashboard wireframe](#dashboard-wireframe)
-- [Project approach](#project-approach)
-- [Project folder structure](#project-folder-structure)
-- [How to run locally](#how-to-run-locally)
-- [Retrospective video](#retrospective-video)
+- [Dashboard Wireframes](#dashboard-wireframe)
+- [Project Approach](#project-approach)
+- [Project Folder Structure](#project-folder-structure)
+- [How to Run Locally](#how-to-run-locally)
+- [Retrospective Video](#retrospective-video)
 
-## Project context {#project-context}
+## Project Context {#project-context}
 
-Our TAG (Training Assessment Group) team has been tasked with building an interactive dashboard that allows users to explore their Fitbit data alongside the data of others in their friendship group.
+Our TAG (Training Assessment Group) team was tasked with building an interactive dashboard that allows users to explore their Fitbit data alongside the data of others in their friendship group.
 
 This project forms part of the DATA2007 team working skills assessment and provides preparation for the Assessed Group Project (AGP) in January 2027.
 
 The sample data covers activity, heart rate, sleep, and movement for approximately 30 Fitbit users. For this prototype, we treat these users as a group of friends who want to understand their exercise habits and compare their progress.
 
-## Dashboard concept and scope {#dashboard-concept-and-scope}
+## Dashboard Concept and Scope {#dashboard-concept-and-scope}
 
 The dashboard is based on the idea of a shared fitness platform where friends can compare activity, identify trends, and stay motivated through shared progress.
 
@@ -46,17 +46,18 @@ The wider platform concept would allow users to:
 
 The project uses **R Shiny** for the interactive dashboard and **R Markdown** or **R** for supporting analysis and reporting.
 
-## Target users {#target-users}
+## Target Users {#target-users}
 
 The primary users are athletes who want to understand their activity and compare performance within a friendship group.
 
 In future, the platform could also support people beginning their fitness journey or users who want a personalised view of progress towards specific goals.
 
-## Data source {#data-source}
 
-The prototype uses an open Fitbit dataset comprising of 18 CSV files with measurements recorded at different levels of detail, including minute, hourly, and daily observations.
+## Data Source {#data-source}
 
-The files cover measurements such as:
+The prototype uses an open Fitbit dataset containing activity and health measurements from approximately 30 users who consented to share their data through a survey on Amazon Mechanical Turk.
+
+The dataset comprises 18 CSV files covering different measurement types, with observations recorded at minute, hourly, and daily intervals. These include:
 
 - Steps and activity intensity.
 - Calories burned.
@@ -64,11 +65,11 @@ The files cover measurements such as:
 - Sleep.
 - Weight and body measurements.
 
-The sample represents the participating users and is used here to demonstrate the dashboard concept.
+For this prototype, the participants are treated as members of a shared friendship group to demonstrate the dashboard’s features. The data reflects the participating users and should not be assumed to represent the wider population.
 
-**Dataset link and confirmed collection period:** To be added.
+**Dataset link:** _To be added if available_ 
 
-## Dashboard questions and features {#dashboard-questions-and-features}
+## Dashboard Questions and Features {#dashboard-questions-and-features}
 
 The dashboard is designed to help users answer:
 
@@ -86,13 +87,13 @@ To support these questions, the dashboard aims to provide:
 - Views of activity and progress over time.
 - Insights into exercise habits and behaviour.
 
-## Group initial EDA Summary {#group-initial-eda-summary}
+## Group Initial EDA Summary {#group-initial-eda-summary}
 
 The Fitbit dataset comprises 18 CSV files containing participant information at varying levels of granularity, including daily, hourly and minute-level observations. These datasets cover physical activity, step counts, calories burned, heart rate, sleep patterns and weight measurements. Initial exploratory analysis identified up to **33 unique participants**, although this representation varied across datasets. Most notably, the weight dataset contained records for only eight participants, limiting its representativeness and the reliability of broader conclusions.
 
-## Sleep Analysis
+### Sleep Analysis
 
-Sleep analysis explored both total minutes asleep and sleep efficiency, calculated as the proportion of time spent in bed that participants were asleep. The distribution of sleep efficiency displayed generally high values, with most observations concentrated above 90%. However, several lower outliers were identified, suggesting considerable variation in individual sleep experiences. The distribution of minutes asleep was concentrated around 400–500 minutes, although observations at both extremes indicated variability in sleep duration. These findings suggest that sleep efficiency and duration provide complementary measures when evaluating sleep patterns.
+Sleep analysis explored both total minutes asleep and sleep efficiency, calculated as the proportion of time spent in bed that participants were asleep. The distribution of sleep efficiency displayed generally high values, with most observations concentrated above 90%. However, several lower outliers were identified, suggesting considerable variation in individual sleep experiences. The distribution of minutes asleep was concentrated around 400-500 minutes, although observations at both extremes indicated variability in sleep duration. These findings suggest that sleep efficiency and duration provide complementary measures when evaluating sleep patterns.
 
 ![Box plot of the distribution of sleep efficiency (Arlo)](./img/sleep_efficiency_boxplot.png)
 
@@ -104,9 +105,9 @@ $$
 \frac{\text{Minutes Asleep}}{\text{Time In Bed}} \times 100
 $$
 
-## Physical Activity
+### Physical Activity
 
-Analysis of daily step counts revealed relatively consistent activity levels throughout the week, with Saturday recording the highest average and Sunday the lowest. Hourly analysis revealed a more pronounced pattern, with activity increasing during the morning and reaching its highest levels around 18:00–19:00. This may reflect daily routines or increased leisure-time activity, although participants' employment status and schedules are unknown.
+Analysis of daily step counts revealed relatively consistent activity levels throughout the week, with Saturday recording the highest average and Sunday the lowest. Hourly analysis revealed a more pronounced pattern, with activity increasing during the morning and reaching its highest levels around 18:00-19:00. This may reflect daily routines or increased leisure-time activity, although participants' employment status and schedules are unknown.
 
 ![Average Steps by Day of the Week (Macy)](./img/average_daily_steps_barplot.png)
 
@@ -116,59 +117,91 @@ Sedentary behaviour was also investigated. The distribution of sedentary minutes
 
 ![Distribution of Sedentary Minutes (Eleanor)](./img/distribution_of_sedentary_minutes.png)
 
-## Heart Rate Analysis
+### Heart Rate Analysis
 
 Heart rate measurements revealed a distinct daily pattern, with lower average values during the early morning and higher values during the afternoon and evening. Notably, the evening increase broadly coincided with the peak in hourly step counts. This is consistent with the expected relationship between physical activity and heart rate, although these trends alone cannot establish a direct relationship at an individual level.
 
 ![Average hourly heart rate (Macy)](./img/average_hourly_heartrate.png)
 
-## Calories and Daily Steps
+### Calories and Daily Steps
 
 Exploration of the calorie datasets identified no missing values or duplicates in the files examined. As a result, step and calorie datasets were combined to support further investigation of potential relationships.
 
 Daily step counts had a median of 7,406 steps, while daily calories burned had a median of 2,134 calories. Both distributions contained outliers, making the median a more appropriate measure of central tendency than the mean due to its resistance to extreme observations.
 
-## Overall Findings
+### Overall Findings
 
 Overall, the EDA identified patterns in activity, sleep and heart rate, alongside variation between participants and datasets. Differences in participant coverage, potential recording limitations and the presence of outliers should be considered when interpreting these results. These findings provide a foundation for further analysis and the development of interactive visualisations that enable participant-level comparisons and exploration across different time periods.
 
 This section will summarise the main patterns, data quality issues, and findings that informed the dashboard design. It will also explain any limitations relevant to interpreting the visualisations.
 
-## Requirements {#requirements}
+### Requirements {#requirements}
 
-As a group, we used the Easy Approach to Requirements Syntax (EARS) to structure out user requirements. The assessment brief asks for 25–40 requirements.
+As a group, we used the Easy Approach to Requirements Syntax (EARS) to structure out user requirements. The assessment brief asks for 25-40 requirements.
 
-Requirements are grouped by EARS template to make it easier to connect them to dashboard features and test their implementation.
+Requirements are grouped by the different EARS templates used to make it easier to connect them to dashboard features and test their implementation.
 
-[View the dashboard requirements document](https://uniofnottm-my.sharepoint.com/:w:/g/personal/psymh18_nottingham_ac_uk/IQCcJMJmJ_DvS7ZWFNVNfwoZAYu-z81M4lw4OoSbdP-m_Bk?e=u9hJum)
+[View Dashboard Requirements](https://uniofnottm-my.sharepoint.com/:w:/g/personal/psymh18_nottingham_ac_uk/IQCcJMJmJ_DvS7ZWFNVNfwoZAYu-z81M4lw4OoSbdP-m_Bk?e=u9hJum)
 
-## Dashboard wireframes {#dashboard-wireframe}
+## Dashboard Wireframes {#dashboard-wireframe}
 
-These were design ahead of any project implementation to create a shared understaning and reference as we were working
+These were designed ahead of any project implementation to create a shared understanding and reference as we were working separately
 
-[View the dahsboard wireframes](https://uniofnottm-my.sharepoint.com/:p:/g/personal/psymh18_nottingham_ac_uk/IQCvsCN7XebLQ7LBkrySul50Af1ynT6em6K14HCVAjykRJU?e=MfMF59) 
+[Dashboard Wireframes](https://uniofnottm-my.sharepoint.com/:p:/g/personal/psymh18_nottingham_ac_uk/IQCvsCN7XebLQ7LBkrySul50Af1ynT6em6K14HCVAjykRJU?e=MfMF59) 
 
-## Project approach {#project-approach}
+## Project Approach {#project-approach}
 
 1.  Explore and clean the dataset.
 2.  Identify key metrics, patterns, and relationships.
 3.  Define and organise the user requirements.
 4.  Produce a 500-word initial data exploration summary.
-5.  Design a dashboard wireframes,
+5.  Design a dashboard wireframes.
 6.  Build the interactive dashboard.
 7.  Test the dashboard against the requirements.
 8.  Record a six-minute video presenting the dashboard, findings, and project retrospective.
 
-## Project folder structure {#project-folder-structure}
+## Project Folder Structure {#project-folder-structure}
 
 ```plaintext
-
+2007_tag_task_1
+├── app.R
+├── data/
+├── exploration/
+├── img/
+└── R/
+    ├── global/
+    │   ├── data/
+    │   ├── functions/
+    │   └── gloabal.R
+    ├── pages/
+    │   ├── mod_activity.R
+    │   ├── mod_calories.R
+    │   ├── mod_heartrate.R
+    │   ├── mod_sleep.R
+    │   └── mod_weight.R
+    └── server/
+        ├── mod_sleep_server.R
+        └── server_avtivity.R
 
 ```
 
-## How to run locally {#how-to-run-locally}
+| File or folder | Purpose |
+|---|---|
+| `app.R` | The dashboard’s main entry point. Loads the required scripts, brings together the user interface and server logic, and creates the Shiny application. |
+| `data/` | Stores the CSV datasets used by the dashboard and supporting analysis. Data files must be added locally because they are not included in the repository. |
+| `exploration/` | Contains exploratory data analysis, including scripts, summaries, and outputs used to inform the dashboard design. |
+| `img/` | Stores images used in the project documentation or dashboard. |
+| `R/` | Contains the R code used to build and run the dashboard. |
+| `R/global/` | Contains shared setup code, data loading scripts, and functions used across dashboard pages. |
+| `R/global/data/` | Contains scripts for loading, cleaning, and preparing datasets for use in the dashboard. |
+| `R/global/functions/` | Contains reusable functions for calculations, visualisations, and dashboard components. |
+| `R/global/gloabal.R` | Loads the packages, data, and shared functions needed by the dashboard. |
+| `R/pages/` | Contains the page modules for the dashboard’s different measurement types. |
+| `R/server/` | Contains server logic for processing inputs and updating dashboard outputs. |
 
-### 1. Download and open the project
+## How to Run Locally {#how-to-run-locally}
+
+### 1. Download and Open the Project
 
 Clone this repository or download and extract it as a ZIP file.
 
@@ -176,7 +209,7 @@ Open the project’s `.Rproj` file in RStudio, if one is provided. Otherwise, op
 
 Run the following commands in the **R console** from the project root so that relative file paths resolve correctly.
 
-### 2. Install the required packages
+### 2. Install the Required Packages
 
 Install the packages used by the project. You only need to install packages that are not already available on your computer.
 
@@ -216,7 +249,7 @@ if (length(missing_packages) > 0) {
 
 This list includes packages used across the project, including supporting analysis.
 
-### 3. Add the data files
+### 3. Add the Data Files
 
 The data files are **not included in this repository**. Download the project dataset and place the CSV files in the `data` folder at the project root:
 
@@ -226,7 +259,7 @@ The data files are **not included in this repository**. Download the project dat
 
 Create this folder if it does not already exist. Keep the original filenames so that the data loading scripts can locate them.
 
-### 4. Launch the dashboard
+### 4. Launch the Dashboard
 
 With your working directory set to the project root and `app.R` located there, run:
 
@@ -247,8 +280,10 @@ If the dashboard does not start:
 - **Missing data file:** Check that the CSV files are in `./data/` and retain their original filenames.
 - **Missing sourced script:** Check that the full repository has been downloaded and that you are running the app from the project root.
 - **File path error:** Check spelling and capitalisation in the path and confirm that it matches the relevant file or folder.
+
 ## Retrospective video {#retrospective-video}
 
 *Link to the retrospective video to be added.*
 
 The video will demonstrate the dashboard, highlight the main findings, and reflect on how we worked as a team including our approach, any challenges we faced, lessons we learnt and future improvements
+[Dashboard Demo & Group Retrospective]() 
