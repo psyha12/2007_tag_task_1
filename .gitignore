@@ -1,4 +1,7 @@
 DSDA_TAG_tasks.pdf
-data/
 .Rproj.user
-
+.Rhistory
+.RData
+.Ruserdata
+/data/
+/R/global/data/raw_data/
