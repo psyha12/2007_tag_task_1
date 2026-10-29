@@ -44,19 +44,20 @@ calories_leaderboard <- reactive({
   
 })
 
-# KPI Box: Total Calories
+# KPI Box: Average Daily Calories (for selected participant vs group)
 output$calories_total <- renderValueBox({
   
-  req(input$calories_dates)
+  req(input$calories_athlete_id)
   
+  athlete_id <- as.character(input$calories_athlete_id)
+  
+  # Athlete's average
   user_avg <- daily_calories %>%
-    filter(
-      ActivityDay >= input$calories_dates[1],
-      ActivityDay <= input$calories_dates[2]
-    ) %>%
+    filter(Id == athlete_id) %>%
     summarise(value = mean(Calories, na.rm = TRUE)) %>%
     pull(value)
   
+  # Group average
   overall_avg <- daily_calories %>%
     summarise(value = mean(Calories, na.rm = TRUE)) %>%
     pull(value)
@@ -71,62 +72,60 @@ output$calories_total <- renderValueBox({
   
 })
 
-# KPI Box: Calories Range
+# KPI Box: Max Day Calories (for selected participant)
 output$calories_avg_daily <- renderValueBox({
   
-  req(input$calories_dates)
+  req(input$calories_athlete_id)
   
-  min_cal <- daily_calories %>%
-    filter(
-      ActivityDay >= input$calories_dates[1],
-      ActivityDay <= input$calories_dates[2]
-    ) %>%
-    summarise(value = min(Calories, na.rm = TRUE)) %>%
-    pull(value)
+  athlete_id <- as.character(input$calories_athlete_id)
   
-  max_cal <- daily_calories %>%
-    filter(
-      ActivityDay >= input$calories_dates[1],
-      ActivityDay <= input$calories_dates[2]
-    ) %>%
+  # Athlete's max day
+  user_max <- daily_calories %>%
+    filter(Id == athlete_id) %>%
     summarise(value = max(Calories, na.rm = TRUE)) %>%
     pull(value)
   
-  range_val <- max_cal - min_cal
+  # Group max day
+  overall_max <- daily_calories %>%
+    summarise(value = max(Calories, na.rm = TRUE)) %>%
+    pull(value)
+  
+  change <- ((user_max - overall_max) / overall_max) * 100
   
   create_kpi_box(
-    title = "Calorie Range",
-    value = round(range_val),
-    change = 0
+    title = "Max Day Calories",
+    value = round(user_max),
+    change = change
   )
   
 })
 
-# KPI Box: Max Day
+# KPI Box: Total Calories (for selected participant)
 output$calories_max_day <- renderValueBox({
   
-  req(input$calories_dates)
+  req(input$calories_athlete_id)
   
-  total_cal <- daily_calories %>%
-    filter(
-      ActivityDay >= input$calories_dates[1],
-      ActivityDay <= input$calories_dates[2]
-    ) %>%
+  athlete_id <- as.character(input$calories_athlete_id)
+  
+  # Athlete's total
+  user_total <- daily_calories %>%
+    filter(Id == athlete_id) %>%
     summarise(value = sum(Calories, na.rm = TRUE)) %>%
     pull(value)
   
-  days_count <- daily_calories %>%
-    filter(
-      ActivityDay >= input$calories_dates[1],
-      ActivityDay <= input$calories_dates[2]
-    ) %>%
-    distinct(ActivityDay) %>%
-    nrow()
+  # Group total average per person
+  overall_total <- daily_calories %>%
+    group_by(Id) %>%
+    summarise(total = sum(Calories, na.rm = TRUE), .groups = "drop") %>%
+    summarise(value = mean(total, na.rm = TRUE)) %>%
+    pull(value)
+  
+  change <- ((user_total - overall_total) / overall_total) * 100
   
   create_kpi_box(
-    title = "Total Period",
-    value = format(round(total_cal), big.mark = ","),
-    change = 0
+    title = "Total Calories",
+    value = format(round(user_total), big.mark = ","),
+    change = change
   )
   
 })

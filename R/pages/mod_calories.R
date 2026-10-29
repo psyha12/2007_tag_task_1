@@ -16,31 +16,39 @@ mod_calories_ui <- function() {
     fluidRow(
       
       column(
+        width = 9,
+        
+        selectInput(
+          "calories_athlete_id",
+          "Select Participant",
+          choices = NULL
+        )
+        
+      )
+      
+    ),
+    
+    fluidRow(
+      
+      column(
         
         width = 9,
         
-        box(
+        fluidRow(
           
-          width = 12,
-          title = "Calories Burned",
+          valueBoxOutput(
+            "calories_total",
+            width = 4
+          ),
           
-          fluidRow(
-            
-            valueBoxOutput(
-              "calories_total",
-              width = 4
-            ),
-            
-            valueBoxOutput(
-              "calories_avg_daily",
-              width = 4
-            ),
-            
-            valueBoxOutput(
-              "calories_max_day",
-              width = 4
-            )
-            
+          valueBoxOutput(
+            "calories_avg_daily",
+            width = 4
+          ),
+          
+          valueBoxOutput(
+            "calories_max_day",
+            width = 4
           )
           
         )
@@ -81,16 +89,7 @@ mod_calories_ui <- function() {
         fluidRow(
           
           column(
-            width = 6,
-            selectInput(
-              "calories_athlete_id",
-              "Select Participant",
-              choices = NULL
-            )
-          ),
-          
-          column(
-            width = 6,
+            width = 12,
             dateInput(
               "calories_comparison_date",
               "Select Date",
@@ -102,7 +101,7 @@ mod_calories_ui <- function() {
         
         plotlyOutput(
           "calories_hourly_plot",
-          height = "350px"
+          height = "400px"
         )
         
       )
