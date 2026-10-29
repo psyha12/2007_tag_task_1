@@ -19,12 +19,6 @@ observe({
     max = max(daily_calories$ActivityDay, na.rm = TRUE)
   )
   
-  updateDateInput(
-    session,
-    "calories_comparison_date",
-    value = min(as.Date(hourly_calories$ActivityHour), na.rm = TRUE)
-  )
-  
 })
 
 # Reactive: Leaderboard data
@@ -161,38 +155,32 @@ output$calories_leaderboard <- renderDT({
   
 })
 
-# Hourly Calories Comparison Plot (YOU vs GROUP AVERAGE)
+# Daily Calories Comparison Plot (YOU vs GROUP AVERAGE)
 output$calories_hourly_plot <- renderPlotly({
   
-  req(input$calories_athlete_id, input$calories_comparison_date)
+  req(input$calories_athlete_id)
   
   tryCatch({
     
     athlete_id <- as.character(input$calories_athlete_id)
-    selected_date <- as.Date(input$calories_comparison_date)
     
-    # Prepare hourly data
-    hourly_data <- hourly_calories %>%
-      mutate(
-        date = as.Date(ActivityHour, tz = "UTC"),
-        hour = lubridate::hour(ActivityHour)
-      )
+    # Get selected athlete's daily data
+    athlete_data <- daily_calories %>%
+      filter(Id == athlete_id) %>%
+      select(date = ActivityDay, athlete_calories = Calories) %>%
+      arrange(date)
     
-    # Get selected athlete's hourly data
-    athlete_data <- hourly_data %>%
-      filter(Id == athlete_id, date == selected_date) %>%
-      select(hour, athlete_calories = Calories)
-    
-    # Get peer average (excluding selected athlete)
-    peer_data <- hourly_data %>%
-      filter(Id != athlete_id, date == selected_date) %>%
-      group_by(hour) %>%
-      summarise(peer_mean = mean(Calories, na.rm = TRUE), .groups = "drop")
+    # Get group average by date (excluding selected athlete)
+    peer_data <- daily_calories %>%
+      filter(Id != athlete_id) %>%
+      group_by(ActivityDay) %>%
+      summarise(peer_mean = mean(Calories, na.rm = TRUE), .groups = "drop") %>%
+      rename(date = ActivityDay)
     
     # Combine data
-    plot_data <- tibble(hour = 0:23) %>%
-      left_join(athlete_data, by = "hour") %>%
-      left_join(peer_data, by = "hour") %>%
+    plot_data <- athlete_data %>%
+      full_join(peer_data, by = "date") %>%
+      arrange(date) %>%
       pivot_longer(
         c(athlete_calories, peer_mean),
         names_to = "series",
@@ -208,7 +196,7 @@ output$calories_hourly_plot <- renderPlotly({
     # Create plot
     p <- ggplot(
       plot_data,
-      aes(x = hour, y = calories, colour = series, group = series)
+      aes(x = date, y = calories, colour = series, group = series)
     ) +
       geom_line(linewidth = 1.2) +
       geom_point(size = 2.5) +
@@ -218,20 +206,17 @@ output$calories_hourly_plot <- renderPlotly({
           "Group Average" = "#E69F00"
         )
       ) +
-      scale_x_continuous(
-        breaks = seq(0, 23, by = 2),
-        labels = paste0(seq(0, 23, by = 2), ":00")
-      ) +
       labs(
-        title = paste("Hourly Calories on", selected_date),
-        x = "Time of Day",
+        title = "Daily Calories Burned",
+        x = "Date",
         y = "Calories Burned",
         colour = ""
       ) +
       theme_minimal() +
       theme(
         legend.position = "top",
-        plot.title = element_text(face = "bold")
+        plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)
       )
     
     ggplotly(p, tooltip = c("x", "y", "colour"))

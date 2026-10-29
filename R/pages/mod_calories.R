@@ -86,19 +86,6 @@ mod_calories_ui <- function() {
         width = 12,
         title = "Your Calories vs Group Average",
         
-        fluidRow(
-          
-          column(
-            width = 12,
-            dateInput(
-              "calories_comparison_date",
-              "Select Date",
-              value = NULL
-            )
-          )
-          
-        ),
-        
         plotlyOutput(
           "calories_hourly_plot",
           height = "400px"
