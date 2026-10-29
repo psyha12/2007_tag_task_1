@@ -82,6 +82,9 @@ server <- function(input, output, session){
   # Activity
   source("R/server/server_activty.R", local = TRUE)
   
+  # Calories
+  source("R/server/mod_calories_server.R", local = TRUE)
+  
   # Sleep
   mod_sleep_server(
     input,
