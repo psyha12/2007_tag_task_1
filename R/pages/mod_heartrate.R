@@ -72,6 +72,15 @@ mod_heartrate_ui <- function() {
         status = "primary",
         solidHeader = TRUE,
         
+        tags$small(
+          tags$b("Resting:"), " <60 | ",
+          tags$b("Normal:"), " 60-100 | ",
+          tags$b("Active:"), " 100-140 | ",
+          tags$b("Vigorous:"), " >140"
+        ),
+        
+        br(), br(),
+        
         uiOutput("hr_zones")
       )
     ),

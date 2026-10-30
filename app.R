@@ -3,11 +3,11 @@ library(shinydashboard)
 library(plotly)
 library(dplyr)
 library(shinyWidgets)
+library(shinyBS)
 
 # Load everything
 source("R/functions/fct_calculate_pct_change.R")
 source("R/functions/kpi_boxes.R")
-# source("R/functions/leaderboard.R")
 
 source("R/pages/mod_activity.R")
 source("R/pages/mod_calories.R")
