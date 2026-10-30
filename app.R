@@ -18,9 +18,7 @@ list.files("R",
 # ----- Fitbit Dashboard User-Interface -----
 ui <- dashboardPage(
   
-  dashboardHeader(
-    title = "FitBit Activity Dashboard"
-  ),
+  dashboardHeader(title = "FitBit Activity Dashboard"),
   
   dashboardSidebar(
     
@@ -61,6 +59,26 @@ ui <- dashboardPage(
 # ----- Server -----
 server <- function(input, output, session){
   
+  # Activity
+  source("R/server/server_activty.R", local = TRUE)
+  
+  # Calories
+  source("R/server/mod_calories_server.R", local = TRUE)
+  
+  # Sleep
+  mod_sleep_server(
+    input,
+    output,
+    session
+  )
+
+  # Weight
+  mod_weight_server(
+    input,
+    output,
+    session
+  )
+
   mod_heartrate_server(input, output, session)
 }
 

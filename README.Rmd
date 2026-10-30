@@ -1,0 +1,14 @@
+---
+title: "README"
+output: html_document
+---
+
+# Group 6 Fitbit TAG task
+For this TAG task we decided to complete our final output in R Markdown and R Shiny drawing on the majority experience of the entire group to create the best dashboard combining our strengths. 
+
+
+# Requirements 
+This was conducted on a shared word document as opposed to git as it was easier to track updates and avoid overwriting each others requirements. The link is attached below
+
+# Wireframe 
+The wireframes were also 
