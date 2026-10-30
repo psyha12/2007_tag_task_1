@@ -1,10 +1,3 @@
-library(shiny)
-library(shinydashboard)
-library(plotly)
-library(dplyr)
-library(shinyWidgets)
-library(shinyBS)
-
 # Load everything
 # Source all R scripts from the R directory and subfolders
 list.files("R",
