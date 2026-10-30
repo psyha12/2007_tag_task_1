@@ -1,12 +1,20 @@
 # Load everything
 # Source all R scripts from the R directory and subfolders
-list.files("R",
-           pattern = "\\.R$",
-           recursive = TRUE,
-           full.names = TRUE) |>
-  sort() |>
-  lapply(source) |>
-  invisible()
+files <- list.files(
+  "R",
+  pattern = "\\.R$",
+  recursive = TRUE,
+  full.names = TRUE
+)
+
+# Remove anything in R/server
+files <- files[!grepl("^R/server/", files)]
+
+# Source everything else
+invisible(lapply(sort(files), source))
+
+source("R/server/mod_sleep_server.R")
+source("R/server/mod_weight_server.R")
 
 # ----- Fitbit Dashboard User-Interface -----
 ui <- dashboardPage(
