@@ -6,14 +6,14 @@ library(shinyWidgets)
 library(shinyBS)
 
 # Load everything
-source("R/functions/fct_calculate_pct_change.R")
-source("R/functions/kpi_boxes.R")
-
-source("R/pages/mod_activity.R")
-source("R/pages/mod_calories.R")
-source("R/pages/mod_heartrate.R")
-source("R/pages/mod_weight.R")
-source("R/pages/mod_sleep.R")
+# Source all R scripts from the R directory and subfolders
+list.files("R",
+           pattern = "\\.R$",
+           recursive = TRUE,
+           full.names = TRUE) |>
+  sort() |>
+  lapply(source) |>
+  invisible()
 
 # ----- Fitbit Dashboard User-Interface -----
 ui <- dashboardPage(
