@@ -54,6 +54,7 @@ weight_data <- load_weight_data()
 
 # 2. Load Functions -------------------------------------------------------
 
-source("R/global/functions/kpi_boxes.R")
-source("R/global/functions/leaderboard_function.R")
-source("R/global/functions/utils.R")
+source("R/functions/kpi_boxes.R")
+source("R/functions/kpi_boxes_sleep.R")
+source("R/functions/leaderboard_function.R")
+source("R/functions/utils.R")
