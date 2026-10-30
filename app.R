@@ -3,16 +3,6 @@ library(shinydashboard)
 library(plotly)
 library(dplyr)
 
-# Source Relevant Components 
-source("R/functions/kpi_boxes.R")
-source("R/functions/leaderboard.R")
-
-source("R/pages/mod_activity.R")
-source("R/pages/mod_calories.R")
-source("R/pages/mod_heartrate.R")
-source("R/pages/mod_weight.R")
-source("R/pages/mod_sleep.R")
-
 # ----- Fitbit Dashboard User-Interface -----
 ui <- dashboardPage(
   
@@ -78,11 +68,6 @@ ui <- dashboardPage(
 # ----- Server -----
 server <- function(input, output, session){
   
-  mod_activity_server(input, output, session)
-  mod_calories_server(input, output, session)
-  mod_heartrate_server(input, output, session)
-  mod_weight_server(input, output, session)
-  mod_sleep_server(input, output, session)
 }
 
 shinyApp(ui, server)
