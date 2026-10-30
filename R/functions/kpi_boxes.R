@@ -2,22 +2,69 @@
 #' 
 #' @param title - Title of the box 
 #' @param value - The metric to show in the box - E.g. Number of Steps 
-#' @param change - The change in the metric - E.g. The percentage change in number of steps 
-
-create_kpi_box <- function(title, value, change) {
+#' @param direction - Has the value increased or decreased? 
+#' @param pct_change - The change in the metric - E.g. The percentage change in number of steps 
+create_kpi_box <- function(title, value, direction, pct_change = NULL) {
   
-  colour <- if (change > 0) { "green" } # E.g. If Steps have increased - show green
-  else if (change < 0) { "red" }        # E.g. If steps have decreased - show red 
-  else { "blue" }                       # E.g. If steps haven't changed - show blue 
+  # ----- Handle Missing KPI Values -----
+  if (is.null(value) ||
+      length(value) == 0 ||
+      is.na(value) ||
+      is.nan(value) ||
+      is.infinite(value)) {
+    
+    return(
+      shinydashboard::valueBox(
+        value = "N/A",
+        subtitle = title,
+        icon = shiny::icon("minus"),
+        color = "light-blue"
+      )
+    )
+  }
   
-  arrow <- if (change > 0) { icon("caret-up") }   # E.g. If Steps have increased - show arrow upwards
-  else if (change < 0) { icon("caret-down") }     # E.g. If Steps have increased - show arrow downwards
-  else { icon("minus") }                          # E.g. If Steps have increased - show no arrow 
+  # ----- Handle Missing Percentage Changes -----
+  if (is.null(pct_change) ||
+      length(pct_change) == 0 ||
+      is.na(pct_change) ||
+      is.nan(pct_change) ||
+      is.infinite(pct_change)) {
+    
+    pct_change <- 0
+  }
   
-  valueBox(value = value,
-           subtitle = tagList(title,                         # Title of the box 
-                              br(),                          # Line space 
-                              arrow,                         # Arrow 
-                              paste(round(change, 1), "%")), # Percentage Change 
-                              color = colour)                # Colour of the box 
+  # ----- Determine Colour -----
+  if (pct_change == 0 || direction == "neutral") {
+    colour <- "light-blue"
+  } else if (direction == "higher_better") {
+    colour <- ifelse(pct_change > 0, "green", "red")
+  } else if (direction == "lower_better") {
+    colour <- ifelse(pct_change < 0, "green", "red")
+  }
+  
+  # ----- Arrow Text -----
+  if (pct_change > 0) {
+    icon_text <- paste0("\u25B2 ", round(pct_change, 1), "%")
+  } else if (pct_change < 0) {
+    icon_text <- paste0("\u25BC ", abs(round(pct_change, 1)), "%")
+  } else {
+    icon_text <- "0%"
+  }
+  
+  # ----- Create Value Box -----
+  shinydashboard::valueBox(
+    value = tagList(value,
+                    tags$br(),
+                    tags$span(icon_text,
+                              style = "
+                    color:white;
+                    font-size:14px;
+                    font-weight:bold;
+                    ")
+    ),
+    subtitle = title,
+    icon = shiny::icon("heartbeat"),
+    color = colour
+  )
+  
 }
