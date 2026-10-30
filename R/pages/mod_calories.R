@@ -31,7 +31,6 @@ mod_calories_ui <- function() {
     fluidRow(
       
       column(
-        
         width = 9,
         
         fluidRow(
@@ -51,16 +50,57 @@ mod_calories_ui <- function() {
             width = 4
           )
           
+        ),
+        
+        br(),
+        
+        fluidRow(
+          
+          column(
+            width = 5,
+            
+            box(
+              width = 12,
+              title = "Select a Day",
+              
+              dateInput(
+                "calories_selected_day",
+                "Pick a date:",
+                value = NULL
+              ),
+              
+              verbatimTextOutput(
+                "calories_day_total"
+              )
+              
+            )
+            
+          ),
+          
+          column(
+            width = 7,
+            
+            box(
+              width = 12,
+              title = "Hourly Breakdown",
+              
+              plotlyOutput(
+                "calories_hourly_breakdown",
+                height = "250px"
+              )
+              
+            )
+            
+          )
+          
         )
         
       ),
       
       column(
-        
         width = 3,
         
         box(
-          
           width = 12,
           title = "Leaderboard",
           
@@ -71,47 +111,6 @@ mod_calories_ui <- function() {
           
           DTOutput(
             "calories_leaderboard"
-          )
-          
-        )
-        
-      )
-      
-    ),
-    
-    fluidRow(
-      
-      column(
-        width = 6,
-        
-        box(
-          width = 12,
-          title = "Select a Day",
-          
-          dateInput(
-            "calories_selected_day",
-            "Pick a date:",
-            value = NULL
-          ),
-          
-          verbatimTextOutput(
-            "calories_day_total"
-          )
-          
-        )
-        
-      ),
-      
-      column(
-        width = 6,
-        
-        box(
-          width = 12,
-          title = "Hourly Breakdown",
-          
-          plotlyOutput(
-            "calories_hourly_breakdown",
-            height = "250px"
           )
           
         )
