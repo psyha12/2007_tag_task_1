@@ -102,6 +102,15 @@ mod_heartrate_ui <- function() {
         status = "primary",
         solidHeader = TRUE,
         
+        tags$small(
+          "Average heart rate by time of day: ",
+          tags$b("Night"), " (00:00-05:59), ",
+          tags$b("Morning"), " (06:00-11:59), ",
+          tags$b("Afternoon"), " (12:00-17:59), ",
+          tags$b("Evening"), " (18:00-23:59)"
+        ),
+        br(), br(),
+        
         plotlyOutput("hr_timeofday")
       )
     )
