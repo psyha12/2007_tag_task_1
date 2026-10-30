@@ -16,6 +16,7 @@ source("R/pages/mod_weight.R")
 source("R/pages/mod_sleep.R")
 source("R/global/global.R")
 source("R/server/mod_sleep_server.R")
+source("R/server/mod_weight_server.R")
 
 # ----- Fitbit Dashboard User-Interface -----
 ui <- dashboardPage(
@@ -91,7 +92,14 @@ server <- function(input, output, session){
     output,
     session
   )
-  
+
+  # Weight
+  mod_weight_server(
+    input,
+    output,
+    session
+  )
+
 }
 
 shinyApp(ui, server)
