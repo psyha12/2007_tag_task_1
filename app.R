@@ -2,21 +2,18 @@ library(shiny)
 library(shinydashboard)
 library(plotly)
 library(dplyr)
+library(shinyWidgets)
+library(shinyBS)
 
-
-# GLOBAL
-# Loads all source libraries / data / environmental variables / functions
-source("R/global/global.R")
-
-# ui tabs 
-source("R/pages/mod_activity.R")
-source("R/pages/mod_calories.R")
-source("R/pages/mod_heartrate.R")
-source("R/pages/mod_weight.R")
-source("R/pages/mod_sleep.R")
-source("R/global/global.R")
-source("R/server/mod_sleep_server.R")
-source("R/server/mod_weight_server.R")
+# Load everything
+# Source all R scripts from the R directory and subfolders
+list.files("R",
+           pattern = "\\.R$",
+           recursive = TRUE,
+           full.names = TRUE) |>
+  sort() |>
+  lapply(source) |>
+  invisible()
 
 # ----- Fitbit Dashboard User-Interface -----
 ui <- dashboardPage(
@@ -28,55 +25,34 @@ ui <- dashboardPage(
     sidebarMenu(
       id = "tabs",
       
-      # ----- Activity Tab -----
-      menuItem(
-        "Activity",
-        tabName = "activity",
-        icon = icon("person-walking")
-      ),
-      
-      # ----- Calorie Tab -----
-      menuItem(
-        "Calories",
-        tabName = "calories",
-        icon = icon("fire")
-      ),
-      
-      # ----- Heart-rate Tab -----
-      menuItem(
-        "Heart Rate",
-        tabName = "heartrate",
-        icon = icon("heart")
-      ),
-      
-      # ----- Weight Tab -----
-      menuItem(
-        "Weight",
-        tabName = "weight",
-        icon = icon("weight-scale")
-      ),
-      
-      # ----- Sleep Tab -----
-      menuItem(
-        "Sleep",
-        tabName = "sleep",
-        icon = icon("bed")
+      menuItem("Activity",
+               tabName = "activity",
+               icon = icon("person-walking")),
+      menuItem("Calories",
+               tabName = "calories",
+               icon = icon("fire")),
+      menuItem("Heart Rate",
+               tabName = "heartrate",
+               icon = icon("heart")),
+      menuItem("Weight", 
+               tabName = "weight",
+               icon = icon("weight-scale")),
+      menuItem("Sleep",
+               tabName = "sleep",
+               icon = icon("bed")
+               )
       )
-    )
-  ),
+    ),
   
   dashboardBody(
     
     tabItems(
-      # ----- UIs for each page -----
       mod_activity_ui(),
       mod_calories_ui(),
       mod_heartrate_ui(),
       mod_weight_ui(),
       mod_sleep_ui()
-      
     )
-    
   )
 )
 
@@ -103,6 +79,7 @@ server <- function(input, output, session){
     session
   )
 
+  mod_heartrate_server(input, output, session)
 }
 
 shinyApp(ui, server)
