@@ -61,7 +61,7 @@ ui <- dashboardPage(
 server <- function(input, output, session){
   
   # Activity
-  source("R/server/server_activty.R", local = TRUE)
+  source("R/server/mod_activity_server.R", local = TRUE)
   
   # Calories
   source("R/server/mod_calories_server.R", local = TRUE)
