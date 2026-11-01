@@ -75,7 +75,8 @@ mod_weight_server <- function(input, output, session) {
     create_kpi_box(
       title = "Weight (kg)",
       value = round(last_value, 1),
-      change = (last_value - first_value) / first_value * 100
+      direction = "lower_better",
+      pct_change = (last_value - first_value) / first_value * 100
     )
 
   })
@@ -94,7 +95,8 @@ mod_weight_server <- function(input, output, session) {
     create_kpi_box(
       title = "BMI",
       value = round(last_value, 1),
-      change = (last_value - first_value) / first_value * 100
+      direction = "lower_better",
+      pct_change = (last_value - first_value) / first_value * 100
     )
 
   })
