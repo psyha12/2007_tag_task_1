@@ -163,7 +163,8 @@ output$avg_steps <- renderValueBox({
     title = "Average Daily Steps",
     value = round(selected_avg),
     direction = "higher_better",
-    pct_change = pct_change
+    pct_change = pct_change,
+    icon_name = "person-walking"
   )
   
 })
@@ -209,7 +210,8 @@ output$avg_active_minutes <- renderValueBox({
     title = "Average Daily Active Minutes",
     value = round(selected_avg),
     direction = "higher_better",
-    pct_change = pct_change
+    pct_change = pct_change,
+    icon_name = "stopwatch"
   )
   
 })
