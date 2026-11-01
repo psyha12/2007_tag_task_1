@@ -77,31 +77,23 @@ mod_sleep_server <- function(input, output, session) {
     user_avg <- sleep_day %>%
       filter(Id == input$sleep_user) %>%
       summarise(
-        value = mean(
-          SleepEfficiency,
-          na.rm = TRUE
-        )
+        value = mean(SleepEfficiency, na.rm = TRUE)
       ) %>%
       pull(value)
     
     overall_avg <- sleep_day %>%
       summarise(
-        value = mean(
-          SleepEfficiency,
-          na.rm = TRUE
-        )
+        value = mean(SleepEfficiency, na.rm = TRUE)
       ) %>%
       pull(value)
     
-    change <- (
-      (user_avg - overall_avg) /
-        overall_avg
-    ) * 100
+    pct_change <- ((user_avg - overall_avg) / overall_avg) * 100
     
-    create_kpi_box(
+    create_sleep_kpi_box(
       title = "Sleep Efficiency",
       value = paste0(round(user_avg, 1), "%"),
-      change = change
+      direction = "higher_better",
+      pct_change = pct_change
     )
     
   })
@@ -113,31 +105,23 @@ mod_sleep_server <- function(input, output, session) {
     user_avg <- sleep_day %>%
       filter(Id == input$sleep_user) %>%
       summarise(
-        value = mean(
-          TotalMinutesAsleep,
-          na.rm = TRUE
-        )
+        value = mean(TotalMinutesAsleep, na.rm = TRUE)
       ) %>%
       pull(value)
     
     overall_avg <- sleep_day %>%
       summarise(
-        value = mean(
-          TotalMinutesAsleep,
-          na.rm = TRUE
-        )
+        value = mean(TotalMinutesAsleep, na.rm = TRUE)
       ) %>%
       pull(value)
     
-    change <- (
-      (user_avg - overall_avg) /
-        overall_avg
-    ) * 100
+    pct_change <- ((user_avg - overall_avg) / overall_avg) * 100
     
-    create_kpi_box(
+    create_sleep_kpi_box(
       title = "Minutes Asleep",
       value = round(user_avg),
-      change = change
+      direction = "higher_better",
+      pct_change = pct_change
     )
     
   })
