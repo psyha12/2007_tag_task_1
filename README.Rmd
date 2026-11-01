@@ -175,15 +175,15 @@ These were designed ahead of any project implementation to create a shared under
 
 ``` plaintext
 2007_tag_task_1
-├── app.R
 ├── data/
 ├── exploration/
 ├── img/
+├── README.md
 └── R/
     ├── global/
     │   ├── data/
-    │   ├── functions/
     │   └── gloabal.R
+    ├── functions/
     ├── pages/
     │   ├── mod_activity.R
     │   ├── mod_calories.R
@@ -192,7 +192,9 @@ These were designed ahead of any project implementation to create a shared under
     │   └── mod_weight.R
     └── server/
         ├── mod_sleep_server.R
-        └── server_avtivity.R
+        ├── mod_avtivity_server.R
+        ├── mod_calories_server.R
+        └── mod_weight_server.R
 ```
 
 | File or folder | Purpose |
