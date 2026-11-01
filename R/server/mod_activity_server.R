@@ -232,9 +232,8 @@ output$steps_trend <- renderPlotly({
       .groups = "drop"
     ) %>%
     mutate(
-      Participant = "Overall Average"
+      Participant = "Average"
     )
-  
   
   # Selected Participant 
   
@@ -248,58 +247,74 @@ output$steps_trend <- renderPlotly({
       .groups = "drop"
     ) %>%
     mutate(
-      Participant = "Selected Participant"
+      Participant = paste("Participant", input$compare_id)
     )
   
+  req(nrow(selected_steps) > 0)
   
-  # Combine Both Datasets 
+  # Combine and Format Tooltips 
   
   plot_data <- bind_rows(
     overall_steps,
     selected_steps
-  )
+  ) %>%
+    mutate(
+      Tooltip = paste0(
+        "Date: ", format(ActivityDate, "%d %b %Y"),
+        "<br>Steps: ", format(
+          round(Steps, 0),
+          big.mark = ",",
+          trim = TRUE
+        ),
+        "<br>", Participant
+      )
+    )
   
-  req(nrow(selected_steps) > 0)
-  
-  
-  # Create Graph
-  
+  # Line Graph
   p <- ggplot(
     plot_data,
     aes(
       x = ActivityDate,
       y = Steps,
       colour = Participant,
-      group = Participant
+      linetype = Participant,
+      group = Participant,
+      text = Tooltip
     )
   ) +
-    geom_line(
-      aes(linetype = Participant),
-      linewidth = 0.8
-    ) +
-    geom_point(size = 0.8) +
-    scale_linetype_manual(
-      values = c(
-        "Overall Average" = "dashed",
-        "Selected Participant" = "solid"
-      )
-    ) +
+    
+    geom_line(linewidth = 1.2) +
+    
+    geom_point(size = 1.5) +
+    
     scale_colour_manual(
-      values = c(
-        "Overall Average" = "#00A3AD",
-        "Selected Participant" = "#F28E2B"
+      values = setNames(
+        c("#00A3AD", "#F28E2B"),
+        c("Average", paste("Participant", input$compare_id))
       )
     ) +
+    
+    scale_linetype_manual(
+      values = setNames(
+        c("dashed", "solid"),
+        c("Average", paste("Participant", input$compare_id))
+      )
+    ) +
+    
     labs(
       x = "Date",
       y = "Daily Steps",
       colour = NULL,
       linetype = NULL
     ) +
+    
     guides(linetype = "none") +
+    
     theme_minimal()
   
-  ggplotly(p)
+  # Display only the custom tooltip
+  ggplotly(p, tooltip = "text")
+  
 })
 
 
@@ -317,13 +332,21 @@ output$hourly_steps_plot <- renderPlotly({
     summarise(
       AvgSteps = mean(StepTotal, na.rm = TRUE),
       .groups = "drop"
+    ) %>%
+    mutate(
+      Tooltip = paste0(
+        "Hour: ", sprintf("%02d:00", Hour),
+        "<br>Average Steps: ",
+        format(round(AvgSteps), big.mark = ",", trim = TRUE)
+      )
     )
   
   p <- ggplot(
     plot_data,
     aes(
       x = Hour,
-      y = AvgSteps
+      y = AvgSteps,
+      text = Tooltip
     )
   ) +
     geom_col(fill = "#00A3AD") +
@@ -335,7 +358,7 @@ output$hourly_steps_plot <- renderPlotly({
     ) +
     theme_minimal()
   
-  ggplotly(p)
+  ggplotly(p, tooltip = "text")
   
 })
 
@@ -353,18 +376,35 @@ output$activity_intensity <- renderPlotly({
       LightlyActive = mean(LightlyActiveMinutes, na.rm = TRUE),
       Sedentary = mean(SedentaryMinutes, na.rm = TRUE)
     ) %>%
+    
     tidyr::pivot_longer(
       cols = everything(),
       names_to = "Intensity",
       values_to = "Minutes"
+    ) %>%
+    
+    mutate(
+      Intensity = case_when(
+        Intensity == "VeryActive" ~ "Very Active",
+        Intensity == "FairlyActive" ~ "Fairly Active",
+        Intensity == "LightlyActive" ~ "Lightly Active",
+        Intensity == "Sedentary" ~ "Sedentary"
+      ) 
+    )%>%
+  mutate(
+    Tooltip = paste0(
+      "Intensity: ", Intensity,
+      "<br>Average Minutes: ", sprintf("%.1f", Minutes)
     )
+  )
   
   p <- ggplot(
     plot_data,
     aes(
       x = "Selected Participants",
       y = Minutes,
-      fill = Intensity
+      fill = Intensity,
+      text = Tooltip
     )
   ) +
     geom_col() +
@@ -376,6 +416,6 @@ output$activity_intensity <- renderPlotly({
     ) +
     theme_minimal()
   
-  ggplotly(p)
+  ggplotly(p, tooltip = "text")
   
 })
