@@ -275,7 +275,7 @@ Requirements](https://uniofnottm-my.sharepoint.com/:w:/g/personal/psymh18_nottin
 These were designed ahead of any project implementation to create a
 shared understanding and reference as we were working separately
 
-[Dashboard
+[View Dashboard
 Wireframes](https://uniofnottm-my.sharepoint.com/:p:/g/personal/psymh18_nottingham_ac_uk/IQCvsCN7XebLQ7LBkrySul50Af1ynT6em6K14HCVAjykRJU?e=MfMF59)
 
 ## Project Approach
@@ -344,45 +344,12 @@ that relative file paths resolve correctly.
 
 ### 2. Install the Required Packages
 
-Install the packages used by the project. You only need to install
-packages that are not already available on your computer.
+Install the R packages required to run the application using the
+provided requirements sourcing script.
 
-``` r
-project_packages <- c(
-  "shiny",
-  "shinydashboard",
-  "plotly",
-  "dplyr",
-  "odbc",
-  "tidyr",
-  "DBI",
-  "stringr",
-  "scales",
-  "reshape2",
-  "janitor",
-  "DT",
-  "gt",
-  "openxlsx",
-  "tidyverse",
-  "skimr",
-  "GGally",
-  "corrplot",
-  "ggplot2",
-  "lubridate"
-)
-
-missing_packages <- setdiff(
-  project_packages,
-  rownames(installed.packages())
-)
-
-if (length(missing_packages) > 0) {
-  install.packages(missing_packages)
-}
-```
-
-This list includes packages used across the project, including
-supporting analysis.
+This script includes all dependencies used throughout the project,
+including packages required for the dashboard and supporting exploratory
+data analysis (EDA).
 
 ### 3. Add the Data Files
 
@@ -435,4 +402,5 @@ The video will demonstrate the dashboard, highlight the main findings,
 and reflect on how we worked as a team including our approach, any
 challenges we faced, lessons we learnt and future improvements
 
-[Dashboard Demo & Group Retrospective]()
+[View Dashboard
+Demo](https://uniofnottm-my.sharepoint.com/:v:/g/personal/psyha12_nottingham_ac_uk/IQCnigi3qixxQYYIy_hhDzfVARG74DHTH47a1Epaj_U6meI?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=tWqbiu)
