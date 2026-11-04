@@ -1,6 +1,15 @@
-.Rproj.user
+# Project files
+DSDA_TAG_tasks.pdf
+
+# RStudio local files
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
+
+# Data files
 /data/
 /R/global/data/raw_data/
+
+# Operating system files
+.DS_Store

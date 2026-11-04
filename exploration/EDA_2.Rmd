@@ -1,0 +1,174 @@
+---
+title: "EDA_2"
+output: html_document
+---
+
+## EDA
+
+This analysis is looking at the following files:
+
+```         
+dailySteps_merged.csv
+hourlyCalories_merged.csv
+hourlyIntensities_merged.csv
+```
+
+The data was collected from a survey that was distributed between the dates 03.12.2016 - 05.12.2026
+
+- Number of records and part
+- Missing values
+- Duplicate rows
+- Date/time coverage
+- Distribution of key measures
+- Outliers/anomalies
+- Potential joins to other datasets
+- Interesting patterns and visualisations
+```{r}
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(plotly)
+```
+
+```{r load-data}
+daily_steps <- read.csv("../data/dailySteps_merged.csv")
+hourly_calories <- read.csv("../data/hourlyCalories_merged.csv")
+hourly_intensities <- read.csv("../data/hourlyIntensities_merged.csv")
+```
+### `dailySteps_merged.csv`
+- `Id`, `ActivityDay`, `StepTotal`
+- Daily activity levels, patterns, differences and similarities between participants
+
+### `hourlyCalories_merged.csv`
+- `Id`, `ActivityHour`, `Calories`
+- Hourly calorie expenditure and variation during the day 
+
+### `hourlyIntensities_merged.csv`
+- `Id`, `ActivityHour`, `TotalIntensity`, `AverageIntensity`
+- When participants are most active and how this links to calories burnt.
+
+Both datasets are on an hourly basis and can provide useful insight on a group dashboard when joined together
+
+
+```{r}
+dataset_summary <- tibble(
+  Dataset = c("Daily Steps", "Hourly Calories",
+              "Hourly Intensities"),
+  Records = c(nrow(daily_steps),
+              nrow(hourly_calories),
+              nrow(hourly_intensities)),
+  Participants = c(n_distinct(daily_steps$Id),
+                   n_distinct(hourly_calories$Id),
+                   n_distinct(hourly_intensities$Id))
+)
+
+dataset_summary
+```
+They also have the sam number of record so they can be accurately joined toeether
+
+```{r shape}
+# Number of rows and columns
+dim(daily_steps)
+dim(hourly_calories)
+dim(hourly_intensities)
+
+# Column names and data types
+glimpse(daily_steps)
+glimpse(hourly_calories)
+glimpse(hourly_intensities)
+
+# Unique participants
+n_distinct(daily_steps$Id)
+n_distinct(hourly_calories$Id)
+n_distinct(hourly_intensities$Id)
+```
+```{r}
+colSums(is.na(daily_steps))
+colSums(is.na(hourly_calories))
+colSums(is.na(hourly_intensities))
+```
+
+```{r}
+sum(duplicated(daily_steps))
+sum(duplicated(hourly_calories))
+sum(duplicated(hourly_intensities))
+```
+No missing rows in any of these datasets or duplicates either. There a
+```{r}
+daily_steps %>%
+  count(Id, ActivityDay) %>%
+  filter(n > 1)
+
+hourly_calories %>%
+  count(Id, ActivityHour) %>%
+  filter(n > 1)
+
+hourly_intensities %>%
+  count(Id, ActivityHour) %>%
+  filter(n > 1)
+```
+Checking the date format: mm/dd/yyyy
+```{r}
+head(daily_steps$ActivityDay)
+head(hourly_calories$ActivityHour)
+head(hourly_intensities$ActivityHour)
+```
+Converting date formats so that they are standard
+```{r}
+daily_steps <- daily_steps %>%
+  mutate(ActivityDay = mdy(ActivityDay))
+
+hourly_calories <- hourly_calories %>%
+  mutate(ActivityHour = mdy_hms(ActivityHour))
+
+hourly_intensities <- hourly_intensities %>%
+  mutate(ActivityHour = mdy_hms(ActivityHour))
+```
+
+Has the earliest and latest dates for both which are 04-12-2016 to 05-12-2016
+```{r}
+range(daily_steps$ActivityDay, na.rm = TRUE)
+range(hourly_calories$ActivityHour, na.rm = TRUE)
+range(hourly_intensities$ActivityHour, na.rm = TRUE)
+```
+```{r}
+daily_steps %>%
+  summarise(
+    MeanSteps = mean(StepTotal, na.rm = TRUE),
+    MedianSteps = median(StepTotal, na.rm = TRUE),
+    MinSteps = min(StepTotal, na.rm = TRUE),
+    MaxSteps = max(StepTotal, na.rm = TRUE),
+    SDSteps = sd(StepTotal, na.rm = TRUE)
+  )
+summary(hourly_calories$Calories)
+
+summary(hourly_intensities$TotalIntensity)
+
+summary(hourly_intensities$AverageIntensity)
+```
+Absolutely insane steppers all these outliers lie on the the upper side 
+```{r}
+Q1 <- quantile(daily_steps$StepTotal, 0.25, na.rm = TRUE)
+Q3 <- quantile(daily_steps$StepTotal, 0.75, na.rm = TRUE)
+
+IQR_steps <- Q3 - Q1
+
+lower <- Q1 - 1.5 * IQR_steps
+upper <- Q3 + 1.5 * IQR_steps
+
+outliers <- daily_steps %>%
+  filter(StepTotal < lower | StepTotal > upper)
+
+outliers
+```
+## Joins
+The possible joins would be between the calories and intensities files as these are both on an hourly basis and have the same number of rows 
+```{r}
+hourly_combined <- hourly_calories %>%
+  inner_join(
+    hourly_intensities,
+    by = c("Id", "ActivityHour"),
+    relationship = "one-to-one"
+  )
+hourly_combined
+```
