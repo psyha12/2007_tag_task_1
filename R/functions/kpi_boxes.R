@@ -3,8 +3,9 @@
 #' @param title - Title of the box 
 #' @param value - The metric to show in the box - E.g. Number of Steps 
 #' @param direction - Has the value increased or decreased? 
-#' @param pct_change - The change in the metric - E.g. The percentage change in number of steps 
-create_kpi_box <- function(title, value, direction, pct_change = NULL) {
+#' @param pct_change - The change in the metric - E.g. The percentage change in number of steps
+#' @param icon_name - The name of the icon
+create_kpi_box <- function(title, value, direction, pct_change = NULL, icon_name="heartbeat") {
   
   # ----- Handle Missing KPI Values -----
   if (is.null(value) ||
@@ -63,7 +64,7 @@ create_kpi_box <- function(title, value, direction, pct_change = NULL) {
                     ")
     ),
     subtitle = title,
-    icon = shiny::icon("heartbeat"),
+    icon = shiny::icon(icon_name),
     color = colour
   )
   

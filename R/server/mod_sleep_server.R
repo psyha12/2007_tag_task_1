@@ -33,19 +33,12 @@ mod_sleep_server <- function(input, output, session) {
     display_data <- create_leaderboard(
       
       data = sleep_day,
-      
       person_col = "Id",
-      
       metric_col = "SleepEfficiency",
-      
       user_id = input$sleep_user,
-      
       date_col = "SleepDay",
-      
       start_date = input$sleep_dates[1],
-      
       end_date = input$sleep_dates[2],
-      
       rank_fun = mean
       
     ) %>%
