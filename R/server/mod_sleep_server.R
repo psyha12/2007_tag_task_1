@@ -82,11 +82,12 @@ mod_sleep_server <- function(input, output, session) {
     
     pct_change <- ((user_avg - overall_avg) / overall_avg) * 100
     
-    create_sleep_kpi_box(
+    create_kpi_box(
       title = "Sleep Efficiency",
       value = paste0(round(user_avg, 1), "%"),
       direction = "higher_better",
-      pct_change = pct_change
+      pct_change = pct_change,
+      icon_name="bed"
     )
     
   })
@@ -110,11 +111,12 @@ mod_sleep_server <- function(input, output, session) {
     
     pct_change <- ((user_avg - overall_avg) / overall_avg) * 100
     
-    create_sleep_kpi_box(
+    create_kpi_box(
       title = "Minutes Asleep",
       value = round(user_avg),
       direction = "higher_better",
-      pct_change = pct_change
+      pct_change = pct_change,
+      icon_name = "bed"
     )
     
   })
