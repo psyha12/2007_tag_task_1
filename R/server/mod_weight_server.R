@@ -76,7 +76,8 @@ mod_weight_server <- function(input, output, session) {
       title = "Weight (kg)",
       value = round(last_value, 1),
       direction = "lower_better",
-      pct_change = (last_value - first_value) / first_value * 100
+      pct_change = (last_value - first_value) / first_value * 100,
+      icon_name = "weight-hanging"
     )
 
   })
@@ -96,7 +97,8 @@ mod_weight_server <- function(input, output, session) {
       title = "BMI",
       value = round(last_value, 1),
       direction = "lower_better",
-      pct_change = (last_value - first_value) / first_value * 100
+      pct_change = (last_value - first_value) / first_value * 100,
+      icon_name = "weight-hanging"
     )
 
   })
