@@ -223,9 +223,13 @@ Run the following commands in the **R console** from the project root so that re
 
 ### 2. Install the Required Packages
 
-Install the R packages required to run the application using the provided requirements sourcing script.
+The project includes a `setup_packages.R` script that checks for required R packages and installs any that are missing. This includes packages used across the dashboard and supporting analysis.
 
-This script includes all dependencies used throughout the project, including packages required for the dashboard and supporting exploratory data analysis (EDA).
+To install the required packages, run the following command in the RStudio Console from the project root directory:
+
+```{r}
+source("setup_packages.R")
+```
 
 ### 3. Add the Data Files
 
