@@ -400,11 +400,10 @@ If the dashboard does not start:
 
 ## Retrospective video
 
-*Link to the retrospective video to be added.*
-
-The video will demonstrate the dashboard, highlight the main findings,
-and reflect on how we worked as a team including our approach, any
-challenges we faced, lessons we learnt and future improvements
+This video provide a walkthrough of the dashboard, showcasing the key
+visualisations and findings. It will also explain our choice of
+programming language, the reasoning behind our visualisation and output
+decisions, and how these support the dashboard’s overall purpose.
 
 [View Dashboard
 Demo](https://uniofnottm-my.sharepoint.com/:v:/g/personal/psyha12_nottingham_ac_uk/IQCnigi3qixxQYYIy_hhDzfVARG74DHTH47a1Epaj_U6meI?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=tWqbiu)
