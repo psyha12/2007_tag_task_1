@@ -1,6 +1,5 @@
 ---
 title: "README"
-<<<<<<< HEAD
 output: github_document
 ---
 
