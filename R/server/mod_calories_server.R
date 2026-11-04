@@ -69,7 +69,9 @@ output$calories_total <- renderValueBox({
   create_kpi_box(
     title = "Average Daily Calories",
     value = round(user_avg),
-    change = change
+    pct_change = change,
+    direction = "neutral",
+    icon_name = "fire"
   )
   
 })
@@ -97,7 +99,9 @@ output$calories_avg_daily <- renderValueBox({
   create_kpi_box(
     title = "Max Day Calories",
     value = round(user_max),
-    change = change
+    pct_change = change,
+    direction = "neutral",
+    icon_name = "fire"
   )
   
 })
@@ -127,7 +131,9 @@ output$calories_max_day <- renderValueBox({
   create_kpi_box(
     title = "Total Calories",
     value = format(round(user_total), big.mark = ","),
-    change = change
+    pct_change = change,
+    direction = "neutral",
+    icon_name = "fire"
   )
   
 })
